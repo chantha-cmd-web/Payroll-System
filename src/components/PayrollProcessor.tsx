@@ -391,6 +391,7 @@ export default function PayrollProcessor({
                   <th rowSpan={2} className="p-3.5 sticky left-32 bg-slate-100 dark:bg-slate-800 z-30 font-bold border-r border-slate-200 dark:border-slate-700 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Names</th>
                   <th rowSpan={2} className="p-3.5 font-bold border-r border-slate-200 dark:border-slate-700 text-center">Position</th>
                   <th rowSpan={2} className="p-3.5 font-bold border-r border-slate-200 dark:border-slate-700 text-center">Campus</th>
+                  <th rowSpan={2} className="p-3.5 font-bold border-r border-slate-200 dark:border-slate-700 text-center">Start Date</th>
                   <th rowSpan={2} className="p-3.5 font-bold border-r border-slate-200 dark:border-slate-700 text-center">Employee Date</th>
                   <th rowSpan={2} className="p-3.5 font-bold border-r border-slate-200 dark:border-slate-700 text-center">Rate</th>
                   <th rowSpan={2} className="p-3.5 font-bold border-r border-slate-200 dark:border-slate-700 text-center">Hours</th>
@@ -559,21 +560,20 @@ export default function PayrollProcessor({
                   className={isPartTime ? "p-3 border-r border-slate-100 dark:border-slate-800 cursor-pointer select-none group h-12 transition hover:bg-slate-100/60 dark:hover:bg-slate-800/40 text-center" : undefined}
                 />
 
-                {!isPartTime && (
-                  <EditableCell
-                    empId={emp.id}
-                    field="doj"
-                    value={emp.doj}
-                    editingCell={editingCell}
-                    editValue={editValue}
-                    onStartEdit={handleStartEdit}
-                    onChangeValue={setEditValue}
-                    onSaveEdit={handleSaveEdit}
-                    onKeyDown={handleKeyDown}
-                    textColor="text-slate-400 font-mono text-[10px]"
-                    isCurrency={false}
-                  />
-                )}
+                <EditableCell
+                  empId={emp.id}
+                  field="doj"
+                  value={emp.doj}
+                  editingCell={editingCell}
+                  editValue={editValue}
+                  onStartEdit={handleStartEdit}
+                  onChangeValue={setEditValue}
+                  onSaveEdit={handleSaveEdit}
+                  onKeyDown={handleKeyDown}
+                  textColor="text-slate-400 font-mono text-[10px]"
+                  isCurrency={false}
+                  className={isPartTime ? "p-3 border-r border-slate-100 dark:border-slate-800 cursor-pointer select-none group h-12 transition hover:bg-slate-100/60 dark:hover:bg-slate-800/40 text-center" : undefined}
+                />
 
                 <EditableCell
                   empId={emp.id}
@@ -603,6 +603,7 @@ export default function PayrollProcessor({
                     onSaveEdit={handleSaveEdit}
                     onKeyDown={handleKeyDown}
                     textColor="text-blue-600 dark:text-blue-400 font-semibold text-center"
+                    isCurrency={false}
                     className="p-3 border-r border-slate-100 dark:border-slate-800 cursor-pointer select-none group h-12 transition hover:bg-slate-100/60 dark:hover:bg-slate-800/40 text-center"
                   />
                 )}
