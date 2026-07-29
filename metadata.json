@@ -1,0 +1,6 @@
+{
+  "name": "Cambodia Payroll & Tax System",
+  "description": "Comprehensive monthly salary and tax calculator for Cambodia, compliant with NBC exchange rates.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
