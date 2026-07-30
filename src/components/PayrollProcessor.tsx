@@ -691,9 +691,8 @@ export default function PayrollProcessor({
                         value={emp.customSalaryPaidKHR !== undefined ? emp.customSalaryPaidKHR : ''} placeholder={emp.salaryPaidKHR.toString()}
                         onChange={(e) => { const val = e.target.value; onUpdateField(emp.id, 'customSalaryPaidKHR', val === '' ? undefined : parseFloat(val)); }} />
                     </td>
-                    <EditableCell empId={emp.id} field="spouse" value={emp.spouse} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown} />
-                    <EditableCell empId={emp.id} field="kids" value={emp.kids} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
-                      textColor="text-slate-500 font-semibold" isCurrency={false} />
+                    <td className="p-3 text-center text-[11px] font-medium text-slate-600 dark:text-slate-400">{emp.spouse ? 'Yes' : 'No'}</td>
+                    <td className="p-3 font-mono text-[11px] font-semibold text-slate-500 text-center">{emp.kids}</td>
                     <td className="p-3 font-semibold text-slate-700 dark:text-slate-300 font-mono text-[11px]">{formatKHR(((emp.spouse ? 1 : 0) + emp.kids) * 150000)}</td>
                     <td className="p-3 font-mono text-[11px] bg-amber-50/20 dark:bg-amber-950/5 text-slate-700 dark:text-slate-300">{formatKHR(emp.taxBaseKHR)}</td>
                     <td className="p-3 font-mono font-bold bg-amber-50/20 dark:bg-amber-950/5 text-amber-600 dark:text-amber-500 text-center">{emp.taxRate}</td>
@@ -779,9 +778,8 @@ export default function PayrollProcessor({
                         value={emp.customSalaryPaidKHR !== undefined ? emp.customSalaryPaidKHR : ''} placeholder={emp.salaryPaidKHR.toString()}
                         onChange={(e) => { const val = e.target.value; onUpdateField(emp.id, 'customSalaryPaidKHR', val === '' ? undefined : parseFloat(val)); }} />
                     </td>
-                    <EditableCell empId={emp.id} field="spouse" value={emp.spouse} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown} />
-                    <EditableCell empId={emp.id} field="kids" value={emp.kids} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
-                      textColor="text-slate-500 font-semibold" isCurrency={false} />
+                    <td className="p-3 text-center text-[11px] font-medium text-slate-600 dark:text-slate-400">{emp.spouse ? 'Yes' : 'No'}</td>
+                    <td className="p-3 font-mono text-[11px] font-semibold text-slate-500 text-center">{emp.kids}</td>
                     <td className="p-3 font-semibold text-slate-700 dark:text-slate-300 font-mono text-[11px]">{formatKHR(((emp.spouse ? 1 : 0) + emp.kids) * 150000)}</td>
                     <td className="p-3 font-mono text-[11px] bg-amber-50/20 dark:bg-amber-950/5 text-slate-700 dark:text-slate-300">{formatKHR(emp.taxBaseKHR)}</td>
                     <td className="p-3 font-mono font-bold bg-amber-50/20 dark:bg-amber-950/5 text-amber-600 dark:text-amber-500 text-center">{emp.taxRate}</td>
