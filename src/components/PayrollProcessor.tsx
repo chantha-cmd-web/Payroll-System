@@ -434,13 +434,13 @@ export default function PayrollProcessor({
                 {isPartTime && <th className="p-3.5 font-bold text-blue-600">Present Hrs</th>}
                 {!isFullTime && <th className="p-3.5 font-bold text-rose-500">Abs Hrs</th>}
                 {!isFullTime && !isPartTime && <th className="p-3.5 font-bold text-emerald-500">Sub Hrs</th>}
-                {!isFullTime && !isPartTime && <th className="p-3.5 font-bold text-indigo-500">After School Hrs</th>}
                 <th className="p-3.5 font-bold text-rose-500">{isFullTime ? '13. Absence (-)' : 'Abs(-)'}</th>
                 <th className="p-3.5 font-bold text-emerald-500">{isFullTime ? '14. Maternity (+)' : 'Maternity (+)'}</th>
                 <th className="p-3.5 font-bold text-emerald-500">{isFullTime ? '15. OT (+)' : 'OT (+)'}</th>
                 <th className="p-3.5 font-bold text-emerald-500">{isFullTime ? '16. Cash Advance (+)/Seniority' : 'Cash Advance (+)/Seniorit'}</th>
                 <th className="p-3.5 font-bold text-rose-500">{isFullTime ? '17. Cash Advance (-)' : 'Cash Advance (-)'}</th>
                 <th className="p-3.5 font-bold text-rose-500">{isFullTime ? '18. Provident with NSSF (-)' : 'Provident with NSSF(-)'}</th>
+                {!isFullTime && !isPartTime && <th className="p-3.5 font-bold text-indigo-500">After School Hrs</th>}
                 <th className="p-3.5 font-bold">{isFullTime ? '19. Seniority/ GEP' : 'Seniority/GEP'}</th>
                 <th className="p-3.5 font-bold bg-brand-50/40 dark:bg-brand-950/10 text-brand-600 dark:text-brand-400">
                   {isFullTime ? '20. Gross Salary' : 'G.Salary'}
@@ -710,22 +710,6 @@ export default function PayrollProcessor({
                   />
                 )}
 
-                {!isFullTime && !isPartTime && (
-                  <EditableCell
-                    empId={emp.id}
-                    field="afterSchool"
-                    value={emp.afterSchool}
-                    editingCell={editingCell}
-                    editValue={editValue}
-                    onStartEdit={handleStartEdit}
-                    onChangeValue={setEditValue}
-                    onSaveEdit={handleSaveEdit}
-                    onKeyDown={handleKeyDown}
-                    textColor="text-indigo-600 dark:text-indigo-400 font-semibold"
-                    isCurrency={false}
-                  />
-                )}
-
                 {!isPartTime && (
                   <>
                     <EditableCell
@@ -802,6 +786,21 @@ export default function PayrollProcessor({
                       onKeyDown={handleKeyDown}
                       textColor="text-rose-600 dark:text-rose-400 font-semibold"
                     />
+                    {!isFullTime && !isPartTime && (
+                      <EditableCell
+                        empId={emp.id}
+                        field="afterSchool"
+                        value={emp.afterSchool}
+                        editingCell={editingCell}
+                        editValue={editValue}
+                        onStartEdit={handleStartEdit}
+                        onChangeValue={setEditValue}
+                        onSaveEdit={handleSaveEdit}
+                        onKeyDown={handleKeyDown}
+                        textColor="text-indigo-600 dark:text-indigo-400 font-semibold"
+                        isCurrency={false}
+                      />
+                    )}
                     <EditableCell
                       empId={emp.id}
                       field="seniority"
