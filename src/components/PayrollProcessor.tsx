@@ -958,7 +958,7 @@ export default function PayrollProcessor({
                   onChangeValue={setEditValue}
                   onSaveEdit={handleSaveEdit}
                   onKeyDown={handleKeyDown}
-                  textColor="text-slate-400 font-mono font-bold tracking-wider uppercase"
+                  textColor="text-slate-400"
                   isCurrency={false}
                   className={isPartTime ? "p-3 border-r border-slate-100 dark:border-slate-800 cursor-pointer select-none group h-12 transition hover:bg-slate-100/60 dark:hover:bg-slate-800/40 text-center" : undefined}
                 />
@@ -1020,10 +1020,24 @@ export default function PayrollProcessor({
 const formatDate = (val: string | number | boolean): string => {
   const s = String(val);
   if (!s || s === '-') return '-';
+
+  // Try parsing as an Excel serial number (days since 1900-01-01)
+  const num = Number(s);
+  if (!isNaN(num) && num > 1 && num < 200000) {
+    const d = new Date(Date.UTC(1899, 11, 30 + num));
+    if (!isNaN(d.getTime())) {
+      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      return `${d.getUTCDate()}-${months[d.getUTCMonth()]}-${d.getUTCFullYear()}`;
+    }
+  }
+
   const d = new Date(s);
-  if (isNaN(d.getTime())) return s;
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  return `${d.getDate()}-${months[d.getMonth()]}-${d.getFullYear()}`;
+  if (!isNaN(d.getTime())) {
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${d.getDate()}-${months[d.getMonth()]}-${d.getFullYear()}`;
+  }
+
+  return s;
 };
 
 interface EditableCellProps {
