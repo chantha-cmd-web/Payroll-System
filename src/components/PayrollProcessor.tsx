@@ -170,7 +170,7 @@ export default function PayrollProcessor({
     
     // Check if it's supposed to be a number or boolean based on the field
     if (['spouse'].includes(field)) {
-      finalValue = value === 'true';
+      finalValue = value;
     } else if (['staffId', 'name', 'nat', 'pos', 'dept', 'campus', 'doj', 'empDate', 'bankAcc', 'email', 'remarks'].includes(field)) {
       finalValue = editValue;
     } else if (['customGrossUSD', 'customSalaryPaidKHR'].includes(field) && editValue === '') {
@@ -691,9 +691,9 @@ export default function PayrollProcessor({
                         value={emp.customSalaryPaidKHR !== undefined ? emp.customSalaryPaidKHR : ''} placeholder={emp.salaryPaidKHR.toString()}
                         onChange={(e) => { const val = e.target.value; onUpdateField(emp.id, 'customSalaryPaidKHR', val === '' ? undefined : parseFloat(val)); }} />
                     </td>
-                    <td className="p-3 text-center text-[11px] font-medium text-slate-600 dark:text-slate-400">{emp.spouse ? 'Yes' : 'No'}</td>
+                    <td className="p-3 text-center text-[11px] font-medium text-slate-600 dark:text-slate-400">{emp.spouse || '-'}</td>
                     <td className="p-3 font-mono text-[11px] font-semibold text-slate-500 text-center">{emp.kids}</td>
-                    <td className="p-3 font-semibold text-slate-700 dark:text-slate-300 font-mono text-[11px]">{formatKHR(((emp.spouse ? 1 : 0) + emp.kids) * 150000)}</td>
+                    <td className="p-3 font-semibold text-slate-700 dark:text-slate-300 font-mono text-[11px]">{formatKHR(((/^(yes|true|y|1)$/i.test(emp.spouse) ? 1 : Number(emp.spouse) > 0 ? 1 : 0) + emp.kids) * 150000)}</td>
                     <td className="p-3 font-mono text-[11px] bg-amber-50/20 dark:bg-amber-950/5 text-slate-700 dark:text-slate-300">{formatKHR(emp.taxBaseKHR)}</td>
                     <td className="p-3 font-mono font-bold bg-amber-50/20 dark:bg-amber-950/5 text-amber-600 dark:text-amber-500 text-center">{emp.taxRate}</td>
                     <td className="p-3 font-mono text-[11px] text-rose-500 bg-amber-50/20 dark:bg-amber-950/5 font-semibold">{formatKHR(emp.taxKHR)}</td>
@@ -778,9 +778,9 @@ export default function PayrollProcessor({
                         value={emp.customSalaryPaidKHR !== undefined ? emp.customSalaryPaidKHR : ''} placeholder={emp.salaryPaidKHR.toString()}
                         onChange={(e) => { const val = e.target.value; onUpdateField(emp.id, 'customSalaryPaidKHR', val === '' ? undefined : parseFloat(val)); }} />
                     </td>
-                    <td className="p-3 text-center text-[11px] font-medium text-slate-600 dark:text-slate-400">{emp.spouse ? 'Yes' : 'No'}</td>
+                    <td className="p-3 text-center text-[11px] font-medium text-slate-600 dark:text-slate-400">{emp.spouse || '-'}</td>
                     <td className="p-3 font-mono text-[11px] font-semibold text-slate-500 text-center">{emp.kids}</td>
-                    <td className="p-3 font-semibold text-slate-700 dark:text-slate-300 font-mono text-[11px]">{formatKHR(((emp.spouse ? 1 : 0) + emp.kids) * 150000)}</td>
+                    <td className="p-3 font-semibold text-slate-700 dark:text-slate-300 font-mono text-[11px]">{formatKHR(((/^(yes|true|y|1)$/i.test(emp.spouse) ? 1 : Number(emp.spouse) > 0 ? 1 : 0) + emp.kids) * 150000)}</td>
                     <td className="p-3 font-mono text-[11px] bg-amber-50/20 dark:bg-amber-950/5 text-slate-700 dark:text-slate-300">{formatKHR(emp.taxBaseKHR)}</td>
                     <td className="p-3 font-mono font-bold bg-amber-50/20 dark:bg-amber-950/5 text-amber-600 dark:text-amber-500 text-center">{emp.taxRate}</td>
                     <td className="p-3 font-mono text-[11px] text-rose-500 bg-amber-50/20 dark:bg-amber-950/5 font-semibold">{formatKHR(emp.taxKHR)}</td>

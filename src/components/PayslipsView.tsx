@@ -498,13 +498,13 @@ export default function PayslipsView({
                     {selectedEmp.nat === "Khmer" && (
                       <div className="flex justify-between text-xs pt-1">
                         <span className="text-slate-600 dark:text-slate-400 print:text-slate-700">
-                          Relief (Spouse: {selectedEmp.spouse ? "1" : "0"},
+                          Relief (Spouse: {selectedEmp.spouse || "0"},
                           Kids: {selectedEmp.kids}) / ការកាត់បន្ថយ
                         </span>
                         <span className="font-mono text-emerald-700 dark:text-emerald-400 print:text-emerald-700 font-semibold">
                           -
                           {(
-                            (selectedEmp.spouse ? 150000 : 0) +
+                            ((/^(yes|true|y|1)$/i.test(selectedEmp.spouse) ? 1 : Number(selectedEmp.spouse) > 0 ? 1 : 0) * 150000) +
                             selectedEmp.kids * 150000
                           ).toLocaleString()}{" "}
                           ៛

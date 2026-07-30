@@ -67,7 +67,7 @@ export default function EmployeeMaster({
     caDed: 0,
     nssf: 0,
     seniority: 0,
-    spouse: false,
+    spouse: '0',
     kids: 0,
     allowance: 0,
     sdReturn: 0,
@@ -271,7 +271,7 @@ export default function EmployeeMaster({
                seniority: parseNumber(getValue(19, 0), 0),
                customGrossUSD: getValue(20, '') !== '' ? parseNumber(getValue(20)) : undefined,
                customSalaryPaidKHR: getValue(21, '') !== '' ? parseNumber(getValue(21)) : undefined,
-                spouse: (() => { const v = getValue(22, ''); const s = String(v).toLowerCase().trim(); if (['yes','true','y'].includes(s)) return true; const num = Number(s); return !isNaN(num) && num > 0; })(),
+                 spouse: String(getValue(22, '0')),
                kids: parseNumber(getValue(23, 0), 0),
                allowance: parseNumber(getValue(24, 0), 0),
                sdReturn: parseNumber(getValue(30, 0), 0),
@@ -810,12 +810,8 @@ export default function EmployeeMaster({
                   <div className="grid grid-cols-2 gap-3 mt-2 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-xl border border-blue-100 dark:border-blue-900/30">
                     <div>
                       <label className="block text-[10px] font-semibold text-blue-600 dark:text-blue-400 mb-1">Spouse Relief</label>
-                      <select value={formData.spouse ? 'Yes' : 'No'} onChange={(e) => setFormData({ ...formData, spouse: e.target.value === 'Yes' })}
-                        className="w-full px-3 py-1.5 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 border border-blue-200 dark:border-blue-800 rounded-lg text-xs focus:outline-none focus:border-blue-500"
-                      >
-                        <option value="No">No</option>
-                        <option value="Yes">Yes</option>
-                      </select>
+                      <input type="text" value={formData.spouse} onChange={(e) => setFormData({ ...formData, spouse: e.target.value })}
+                        className="w-full px-3 py-1.5 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 border border-blue-200 dark:border-blue-800 rounded-lg text-xs focus:outline-none focus:border-blue-500" placeholder="e.g. 1, Yes, No" />
                     </div>
                     <div>
                       <label className="block text-[10px] font-semibold text-blue-600 dark:text-blue-400 mb-1">Number of Kids</label>

@@ -42,7 +42,7 @@ export interface Employee {
   caDed: number; // Cash Advance Ded
   nssf: number; // NSSF Ded
   seniority: number; // Seniority Indemnity
-  spouse: boolean; // Spouse Relief (Khmer only)
+  spouse: string; // Spouse Relief (Khmer only) - store raw import value
   kids: number; // Number of kids for Relief (Khmer only)
   allowance: number; // Tax-exempt / specific allowance (USD)
   sdReturn: number; // Visa / special deduction return

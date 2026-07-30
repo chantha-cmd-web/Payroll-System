@@ -48,7 +48,7 @@ const INITIAL_EMPLOYEES: Employee[] = [
     caDed: 50, 
     nssf: 0, 
     seniority: 0, 
-    spouse: true, 
+    spouse: '1', 
     kids: 2, 
     allowance: 100, 
     sdReturn: 0, 
@@ -82,7 +82,7 @@ const INITIAL_EMPLOYEES: Employee[] = [
     caDed: 0, 
     nssf: 0, 
     seniority: 0, 
-    spouse: false, 
+    spouse: '0', 
     kids: 0, 
     allowance: 300, 
     sdReturn: 150, 
@@ -116,7 +116,7 @@ const INITIAL_EMPLOYEES: Employee[] = [
     caDed: 0, 
     nssf: 0, 
     seniority: 0, 
-    spouse: true, 
+    spouse: '1', 
     kids: 1, 
     allowance: 50, 
     sdReturn: 0, 
@@ -523,7 +523,7 @@ export default function App() {
 
       // 3. Tax relief: Allowance = (Spouse + Kids) × 150,000 KHR
       // 4. Tax Base = IF(SalaryPaidKHR=0, 0, SalaryPaidKHR - Allowance)
-      const allowanceKHR = ((emp.spouse ? 1 : 0) + emp.kids) * 150000;
+      const allowanceKHR = ((/^(yes|true|y|1)$/i.test(emp.spouse) ? 1 : Number(emp.spouse) > 0 ? 1 : 0) + emp.kids) * 150000;
       const taxBaseKHR = salaryPaidKHR === 0 ? 0 : Math.max(0, salaryPaidKHR - allowanceKHR);
 
       // 5. Official progressive tax schedules and rate calculations
