@@ -573,8 +573,9 @@ export default function PayrollProcessor({
                   textColor="text-slate-400 font-mono text-[10px]"
                   isCurrency={false}
                   className={isPartTime ? "p-3 border-r border-slate-100 dark:border-slate-800 cursor-pointer select-none group h-12 transition hover:bg-slate-100/60 dark:hover:bg-slate-800/40 text-center" : undefined}
+                  displayFormat={formatDate}
                 />
-
+ 
                 <EditableCell
                   empId={emp.id}
                   field="empDate"
@@ -588,6 +589,7 @@ export default function PayrollProcessor({
                   textColor="text-slate-400 font-mono text-[10px]"
                   isCurrency={false}
                   className={isPartTime ? "p-3 border-r border-slate-100 dark:border-slate-800 cursor-pointer select-none group h-12 transition hover:bg-slate-100/60 dark:hover:bg-slate-800/40 text-center" : undefined}
+                  displayFormat={formatDate}
                 />
 
                 {/* Rate (Hr Rate for part time) */}
@@ -956,7 +958,7 @@ export default function PayrollProcessor({
                   onChangeValue={setEditValue}
                   onSaveEdit={handleSaveEdit}
                   onKeyDown={handleKeyDown}
-                  textColor="text-slate-400"
+                  textColor="text-slate-400 font-mono font-bold tracking-wider uppercase"
                   isCurrency={false}
                   className={isPartTime ? "p-3 border-r border-slate-100 dark:border-slate-800 cursor-pointer select-none group h-12 transition hover:bg-slate-100/60 dark:hover:bg-slate-800/40 text-center" : undefined}
                 />
@@ -1015,6 +1017,15 @@ export default function PayrollProcessor({
   );
 }
 
+const formatDate = (val: string | number | boolean): string => {
+  const s = String(val);
+  if (!s || s === '-') return '-';
+  const d = new Date(s);
+  if (isNaN(d.getTime())) return s;
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${d.getDate()}-${months[d.getMonth()]}-${d.getFullYear()}`;
+};
+
 interface EditableCellProps {
   empId: number;
   field: string;
@@ -1030,6 +1041,7 @@ interface EditableCellProps {
   currencySymbol?: string;
   className?: string;
   readOnly?: boolean;
+  displayFormat?: (val: string | number | boolean) => string;
 }
 
 function EditableCell({
@@ -1046,7 +1058,8 @@ function EditableCell({
   isCurrency = true,
   currencySymbol = '$',
   className,
-  readOnly = false
+  readOnly = false,
+  displayFormat
 }: EditableCellProps) {
   const isEditing = editingCell?.id === empId && editingCell?.field === field;
 
@@ -1098,7 +1111,7 @@ function EditableCell({
           <span className={`${textColor} ${isNumberType ? 'font-mono' : 'text-[11px] truncate max-w-[130px] font-medium'}`} title={typeof value === 'string' ? value : ''}>
             {isNumberType 
               ? (value === 0 ? '-' : (isCurrency ? (currencySymbol === '៛' ? `${value.toLocaleString()} ៛` : `${currencySymbol}${value.toLocaleString()}`) : value.toLocaleString()))
-              : (value || '-')}
+              : (displayFormat ? displayFormat(value) : (value || '-'))}
           </span>
           <Edit3 className="w-3 h-3 text-slate-300 opacity-0 group-hover:opacity-100 transition flex-shrink-0" />
         </div>
