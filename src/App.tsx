@@ -559,11 +559,15 @@ export default function App() {
       // 6. Net Salaries
       const salaryAfterTaxUSD = grossSalaryUSD - taxUSD;
       const netBankUSD = emp.employmentType === 'Full-Time'
-        ? salaryAfterTaxUSD + emp.sdReturn - emp.seniority - emp.caAdd
+        ? salaryAfterTaxUSD + emp.other + emp.sdReturn - emp.seniority - emp.caAdd
         : emp.employmentType === 'Semi-Full-Time'
-        ? salaryAfterTaxUSD + emp.sdReturn - emp.seniority - emp.caAdd + emp.adjustError - emp.workBook
+        ? salaryAfterTaxUSD - emp.seniority - emp.caAdd + emp.adjustError - emp.workBook
         : salaryAfterTaxUSD + emp.sdReturn;
-      const grossForSummary = grossSalaryUSD + emp.sdReturn;
+      const grossForSummary = emp.employmentType === 'Full-Time'
+        ? grossSalaryUSD + emp.other + emp.sdReturn
+        : emp.employmentType === 'Semi-Full-Time'
+        ? grossSalaryUSD
+        : grossSalaryUSD + emp.sdReturn;
 
       return {
         ...emp,
