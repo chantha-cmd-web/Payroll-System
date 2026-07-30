@@ -339,7 +339,7 @@ export default function EmployeeMaster({
         ...commonHeaders,
         'Basic Salary', 'Prepay %', 'Other', 'Maternity(+)', 'Rate (Hourly)', 'Schedule Hours',
         'Cash Advance(+)', 'NSSF(-)', 'After School Hours', 'Seniority',
-        'Spouse', 'Kids', 'Allowance', 'SD Return (+)/ Visa Extension Work Permit (+)', 'Adjust Error TOS/NSSF', 'Work Book (-)',
+        'Spouse', 'Kids', 'Allowance', 'Adjust Error TOS/NSSF', 'Work Book (-)',
         'Bank Acc', 'Email', 'Remarks', 'Status', ...typeSuffix
       ];
     } else {
