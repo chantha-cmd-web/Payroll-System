@@ -521,16 +521,10 @@ export default function App() {
       const computedSalaryPaidKHR = grossSalaryUSD * exchangeRate;
       const salaryPaidKHR = emp.customSalaryPaidKHR !== undefined ? emp.customSalaryPaidKHR : computedSalaryPaidKHR;
 
-      // 3. Spouses and Dependent Kids tax reliefs (KHR) - applicable to Khmer nationals only
-      let reliefKHR = 0;
-      if (emp.nat === 'Khmer') {
-        if (emp.spouse) reliefKHR += 150000;
-        reliefKHR += (emp.kids * 150000);
-      }
-
-      // 4. Progressive Tax Calculation Base in KHR
-      const allowanceKHR = emp.allowance * exchangeRate;
-      const taxBaseKHR = Math.max(0, salaryPaidKHR - reliefKHR + allowanceKHR);
+      // 3. Tax relief: Allowance (1 + kids) × 150,000 KHR
+      // 4. Tax Base = IF(SalaryPaidKHR=0, 0, SalaryPaidKHR - Allowance)
+      const allowanceKHR = (1 + emp.kids) * 150000;
+      const taxBaseKHR = salaryPaidKHR === 0 ? 0 : Math.max(0, salaryPaidKHR - allowanceKHR);
 
       // 5. Official progressive tax schedules and rate calculations
       let taxKHR = 0;
@@ -563,13 +557,13 @@ export default function App() {
       const taxUSD = taxKHR / exchangeRate;
 
       // 6. Net Salaries
-      const salaryAfterTaxUSD = grossSalaryUSD + emp.allowance - taxUSD;
+      const salaryAfterTaxUSD = grossSalaryUSD - taxUSD;
       const netBankUSD = emp.employmentType === 'Full-Time'
         ? salaryAfterTaxUSD + emp.sdReturn - emp.seniority - emp.caAdd
         : emp.employmentType === 'Semi-Full-Time'
         ? salaryAfterTaxUSD + emp.sdReturn - emp.seniority - emp.caAdd + emp.adjustError - emp.workBook
         : salaryAfterTaxUSD + emp.sdReturn;
-      const grossForSummary = grossSalaryUSD + emp.allowance + emp.sdReturn;
+      const grossForSummary = grossSalaryUSD + emp.sdReturn;
 
       return {
         ...emp,
