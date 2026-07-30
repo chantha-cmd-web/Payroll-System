@@ -189,7 +189,10 @@ export default function EmployeeMaster({
               else if (norm.includes('email')) columnIndexMap[34] = index;
               else if (norm.includes('remark')) columnIndexMap[35] = index;
               else if (norm.includes('status')) columnIndexMap[102] = index;
-              else if (norm.includes('type') || norm.includes('employmenttype')) columnIndexMap[99] = index;
+               else if (norm.includes('present') || norm.includes('prhrs') || norm.includes('workhrs')) columnIndexMap[103] = index;
+               else if (norm.includes('absence') && (norm.includes('hr') || norm.includes('hour'))) columnIndexMap[104] = index;
+               else if (norm.includes('substitute') || norm.includes('subhrs') || norm.includes('subhr')) columnIndexMap[105] = index;
+               else if (norm.includes('type') || norm.includes('employmenttype')) columnIndexMap[99] = index;
            }
         });
 
@@ -237,6 +240,9 @@ export default function EmployeeMaster({
                basic: parseNumber(getValue(11, 0), 0),
                hourlyRate: parseNumber(getValue(100, 0), 0),
                scheduleHours: parseNumber(getValue(101, 0), 0),
+               presentHours: parseNumber(getValue(103, 0), 0),
+               absenceHours: parseNumber(getValue(104, 0), 0),
+               substituteHours: parseNumber(getValue(105, 0), 0),
                prePayPct: parseNumber(getValue(12, 100), 100),
                absence: parseNumber(getValue(13, 0), 0),
                maternity: parseNumber(getValue(14, 0), 0),

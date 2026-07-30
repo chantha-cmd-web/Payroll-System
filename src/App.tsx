@@ -386,7 +386,7 @@ export default function App() {
 
         const empIndex = updatedEmployees.findIndex(e => 
           e.staffId.toUpperCase().replace(/\s+/g, '') === normalizedStaffId && 
-          e.employmentType === 'Semi-Full-Time'
+          (e.employmentType === 'Semi-Full-Time' || e.employmentType === 'Part-Time')
         );
         
         if (empIndex === -1) {
@@ -1112,6 +1112,7 @@ export default function App() {
                         isPartTime={true}
                         onSyncAttendance={syncAttendanceData}
                         onSyncSalary={syncSalaryInfo}
+                        onSyncStatus={syncStatusData}
                       />
                     )}
 
