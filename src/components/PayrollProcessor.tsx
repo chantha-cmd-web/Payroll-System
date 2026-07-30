@@ -434,6 +434,7 @@ export default function PayrollProcessor({
                 {isPartTime && <th className="p-3.5 font-bold text-blue-600">Present Hrs</th>}
                 {!isFullTime && <th className="p-3.5 font-bold text-rose-500">Abs Hrs</th>}
                 {!isFullTime && !isPartTime && <th className="p-3.5 font-bold text-emerald-500">Sub Hrs</th>}
+                {!isFullTime && !isPartTime && <th className="p-3.5 font-bold text-indigo-500">After School Hrs</th>}
                 <th className="p-3.5 font-bold text-rose-500">{isFullTime ? '13. Absence (-)' : 'Abs(-)'}</th>
                 <th className="p-3.5 font-bold text-emerald-500">{isFullTime ? '14. Maternity (+)' : 'Maternity (+)'}</th>
                 <th className="p-3.5 font-bold text-emerald-500">{isFullTime ? '15. OT (+)' : 'OT (+)'}</th>
@@ -705,6 +706,22 @@ export default function PayrollProcessor({
                     onSaveEdit={handleSaveEdit}
                     onKeyDown={handleKeyDown}
                     textColor="text-emerald-600 dark:text-emerald-400 font-semibold"
+                    isCurrency={false}
+                  />
+                )}
+
+                {!isFullTime && !isPartTime && (
+                  <EditableCell
+                    empId={emp.id}
+                    field="afterSchool"
+                    value={emp.afterSchool}
+                    editingCell={editingCell}
+                    editValue={editValue}
+                    onStartEdit={handleStartEdit}
+                    onChangeValue={setEditValue}
+                    onSaveEdit={handleSaveEdit}
+                    onKeyDown={handleKeyDown}
+                    textColor="text-indigo-600 dark:text-indigo-400 font-semibold"
                     isCurrency={false}
                   />
                 )}

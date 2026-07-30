@@ -55,6 +55,7 @@ export default function EmployeeMaster({
     presentHours: 0,
     absenceHours: 0,
     substituteHours: 0,
+    afterSchool: 0,
     prePayPct: 100,
     absence: 0,
     maternity: 0,
@@ -192,6 +193,7 @@ export default function EmployeeMaster({
                else if (norm.includes('present') || norm.includes('prhrs') || norm.includes('workhrs') || norm === 'hours') columnIndexMap[103] = index;
                else if (norm.includes('absence') && (norm.includes('hr') || norm.includes('hour'))) columnIndexMap[104] = index;
                else if (norm.includes('substitute') || norm.includes('subhrs') || norm.includes('subhr')) columnIndexMap[105] = index;
+               else if (norm.includes('afterschool') || norm === 'after' || (norm.includes('hrm') && norm.includes('after')) || norm.includes('schoolprogram') || (norm.includes('after') && norm.includes('school'))) columnIndexMap[106] = index;
                else if (norm.includes('type') || norm.includes('employmenttype')) columnIndexMap[99] = index;
             }
          });
@@ -249,6 +251,7 @@ export default function EmployeeMaster({
                presentHours: parseNumber(getValue(103, 0), 0),
                absenceHours: parseNumber(getValue(104, 0), 0),
                substituteHours: parseNumber(getValue(105, 0), 0),
+               afterSchool: parseNumber(getValue(106, 0), 0),
                prePayPct: parseNumber(getValue(12, 100), 100),
                absence: parseNumber(getValue(13, 0), 0),
                maternity: parseNumber(getValue(14, 0), 0),
@@ -318,7 +321,7 @@ export default function EmployeeMaster({
     } else if (activeTab === 'Semi-Full-Time') {
       headers = [
         ...commonHeaders,
-        'Basic Salary', 'Hourly Rate', 'Schedule Hours', 'Absence Hours', 'Substitute Hours',
+        'Basic Salary', 'Hourly Rate', 'Schedule Hours', 'Absence Hours', 'Substitute Hours', 'After School Hours',
         'Prepay %', 'Absence(-)', 'Maternity(+)', 'OT(+)',
         'Cash Advance(+)', 'Cash Advance(-)', 'NSSF(-)', 'Seniority',
         'Spouse', 'Kids', 'Allowance', 'SD Return', 'Prov Fund',
@@ -666,7 +669,7 @@ export default function EmployeeMaster({
                         className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-800 rounded-lg text-xs focus:outline-none focus:border-blue-500" />
                     </div>
                     {formData.employmentType === 'Semi-Full-Time' && (
-                      <div className="grid grid-cols-2 gap-3 col-span-2">
+                      <div className="grid grid-cols-3 gap-3 col-span-2">
                         <div>
                           <label className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1">
                             Hourly Rate (USD)
@@ -679,6 +682,13 @@ export default function EmployeeMaster({
                             Substitute Hours
                           </label>
                           <input type="number" value={formData.substituteHours} onChange={(e) => setFormData({ ...formData, substituteHours: Number(e.target.value) })}
+                            className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-800 rounded-lg text-xs focus:outline-none focus:border-blue-500" />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1">
+                            After School Hrs
+                          </label>
+                          <input type="number" value={formData.afterSchool} onChange={(e) => setFormData({ ...formData, afterSchool: Number(e.target.value) })}
                             className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-800 rounded-lg text-xs focus:outline-none focus:border-blue-500" />
                         </div>
                       </div>

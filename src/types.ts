@@ -30,6 +30,7 @@ export interface Employee {
   presentHours: number; // For part time
   absenceHours: number; // For semi-full-time and part-time
   substituteHours: number; // For semi-full-time
+  afterSchool: number; // HRM/After school program (Semi-Full-Time)
   prePayPct: number; // %
   absence: number; // USD (Calculated or fixed)
   maternity: number; // USD
