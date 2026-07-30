@@ -511,7 +511,7 @@ export default function App() {
       // Using exact column values to match Excel SUM(S72:Z72), applying signs from headers
       const rawGross = emp.employmentType === 'Semi-Full-Time'
         ? prepayAmount + emp.other + emp.maternity + calculatedAmount + emp.caAdd - emp.nssf + calculatedAfterSchool + emp.seniority
-        : prepayAmount - calculatedAbsence + emp.maternity + calculatedOT + emp.caAdd - emp.caDed - emp.nssf + emp.seniority + calculatedAfterSchool;
+        : prepayAmount - calculatedAbsence + emp.maternity + calculatedOT + emp.caAdd - emp.caDed - emp.nssf + emp.seniority;
       const computedGross = Math.round(rawGross * 100) / 100;
       const grossSalaryUSD = emp.customGrossUSD !== undefined ? emp.customGrossUSD : computedGross;
       
