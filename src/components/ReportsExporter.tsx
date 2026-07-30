@@ -23,81 +23,38 @@ export default function ReportsExporter({ processedData, onTriggerToast }: Repor
 
   const availableReports = [
     {
-      id: 'gdt-tax-declaration',
-      title: 'Cambodian GDT Progressive Tax Declaration',
-      description: 'Official format with spouse/kids reliefs, progressive KHR tax bases, and individual tax payments in KHR and USD.',
-      icon: FileSpreadsheet,
-      color: 'text-rose-500 bg-rose-50 dark:bg-rose-950/25',
-      filename: 'gdt_tax_declaration_june_2026.csv',
-      dataGenerator: () => {
-        // Generate CSV rows
-        const headers = 'No,Staff ID,Name,Nationality,Basic Salary (USD),Tax Base (KHR),Tax Rate,Tax due (KHR),Tax due (USD),After Tax Salary (USD)\n';
-        const rows = processedData.map(e => 
-          `${e.id},"${e.staffId}","${e.name}",${e.nat},${e.basic},${e.taxBaseKHR},${e.taxRate},${e.taxKHR},${e.taxUSD},${e.salaryAfterTaxUSD}`
-        ).join('\n');
-        return headers + rows;
-      }
-    },
-    {
-      id: 'aba-bulk-transfer',
-      title: 'ABA Bank Bulk Salary Transfer File',
-      description: 'Pre-formatted ABA Bank CSV file mapping Net Bank Transfers, employee names, and account numbers for easy bank portal uploads.',
-      icon: Banknote,
-      color: 'text-brand-500 bg-brand-50 dark:bg-brand-950/25',
-      filename: 'aba_payroll_upload_june_2026.csv',
-      dataGenerator: () => {
-        const headers = 'Account Number,Amount,Currency,Details\n';
-        const rows = processedData.map(e => 
-          `"${e.bankAcc}",${e.netBankUSD.toFixed(2)},USD,"Salary June 2026 ${e.staffId}"`
-        ).join('\n');
-        return headers + rows;
-      }
-    },
-    {
-      id: 'acleda-bulk-transfer',
-      title: 'ACLEDA Bank CSV Payroll Transfer',
-      description: 'Corporate ACLEDA format matching standard salary schedules. Auto-calculates equivalents in KHR for domestic payroll runs.',
-      icon: Archive,
-      color: 'text-violet-500 bg-violet-50 dark:bg-violet-950/25',
-      filename: 'acleda_payroll_transfers_2026.csv',
-      dataGenerator: () => {
-        const headers = 'No,Name,Account,Amount KHR,Details\n';
-        const rows = processedData.map(e => 
-          `${e.id},"${e.name}","${e.bankAcc}",${(e.netBankUSD * 4050).toFixed(0)},"Corporate Salary"`
-        ).join('\n');
-        return headers + rows;
-      }
-    },
-    {
       id: 'campus-expenses',
       title: 'Campus Expenses Report (Monthly/Yearly)',
-      description: 'Generates a financial summary of salary expenses grouped by Campus. Useful for tracking operational costs across locations.',
+      description: 'Financial summary of salary expenses grouped by Campus — gross, taxes, and net transfers per location.',
       icon: Layers,
       color: 'text-blue-500 bg-blue-50 dark:bg-blue-950/25',
       filename: `campus_expenses_${new Date().getFullYear()}_${new Date().getMonth() + 1}.csv`,
       dataGenerator: () => {
-        const campusTotals: Record<string, number> = {};
+        const campusTotals: Record<string, { gross: number; tax: number; net: number; count: number }> = {};
         processedData.forEach(e => {
-          if (!campusTotals[e.campus]) campusTotals[e.campus] = 0;
-          campusTotals[e.campus] += e.grossSalaryUSD;
+          if (!campusTotals[e.campus]) campusTotals[e.campus] = { gross: 0, tax: 0, net: 0, count: 0 };
+          campusTotals[e.campus].gross += e.grossSalaryUSD;
+          campusTotals[e.campus].tax += e.taxUSD;
+          campusTotals[e.campus].net += e.netBankUSD;
+          campusTotals[e.campus].count++;
         });
-        
-        const headers = 'Year,Month,Campus,Total Expenses (USD)\n';
+
+        const headers = 'Year,Month,Campus,Headcount,Gross (USD),Tax (USD),Net (USD)\n';
         const year = new Date().getFullYear();
-        const month = new Date().toLocaleString('en-US', { month: 'long' });
-        
-        const rows = Object.entries(campusTotals).map(([campus, total]) => 
-          `${year},${month},"${campus}",${total.toFixed(2)}`
+        const monthName = new Date().toLocaleString('en-US', { month: 'long' });
+
+        const rows = Object.entries(campusTotals).map(([campus, data]) =>
+          `${year},${monthName},"${campus}",${data.count},${data.gross.toFixed(2)},${data.tax.toFixed(2)},${data.net.toFixed(2)}`
         ).join('\n');
-        
+
         return headers + rows;
       }
     },
     {
       id: 'enterprise-full-summary',
       title: 'Full Corporate Financial Summary',
-      description: 'Consolidated JSON breakdown of gross commitments, total Cambodian tax collected, average salaries, and budget costs.',
-      icon: Layers,
+      description: 'Consolidated breakdown of gross commitments, total Cambodian tax, net transfers, and headcount.',
+      icon: FileText,
       color: 'text-emerald-500 bg-emerald-50 dark:bg-emerald-950/25',
       filename: 'enterprise_payroll_consolidated_2026.json',
       dataGenerator: () => {
@@ -120,6 +77,51 @@ export default function ReportsExporter({ processedData, onTriggerToast }: Repor
           }))
         };
         return JSON.stringify(payload, null, 2);
+      }
+    },
+    {
+      id: 'gdt-tax-declaration',
+      title: 'Cambodian GDT Progressive Tax Declaration',
+      description: 'Official format with spouse/kids reliefs, progressive KHR tax bases, and individual tax payments in KHR and USD.',
+      icon: FileSpreadsheet,
+      color: 'text-rose-500 bg-rose-50 dark:bg-rose-950/25',
+      filename: 'gdt_tax_declaration_june_2026.csv',
+      dataGenerator: () => {
+        const headers = 'No,Staff ID,Name,Nationality,Basic Salary (USD),Tax Base (KHR),Tax Rate,Tax due (KHR),Tax due (USD),After Tax Salary (USD)\n';
+        const rows = processedData.map(e =>
+          `${e.id},"${e.staffId}","${e.name}",${e.nat},${e.basic},${e.taxBaseKHR},${e.taxRate},${e.taxKHR},${e.taxUSD},${e.salaryAfterTaxUSD}`
+        ).join('\n');
+        return headers + rows;
+      }
+    },
+    {
+      id: 'aba-bulk-transfer',
+      title: 'ABA Bank Bulk Salary Transfer File',
+      description: 'Pre-formatted ABA Bank CSV file mapping Net Bank Transfers, employee names, and account numbers for easy bank portal uploads.',
+      icon: Banknote,
+      color: 'text-brand-500 bg-brand-50 dark:bg-brand-950/25',
+      filename: 'aba_payroll_upload_june_2026.csv',
+      dataGenerator: () => {
+        const headers = 'Account Number,Amount,Currency,Details\n';
+        const rows = processedData.map(e =>
+          `"${e.bankAcc}",${e.netBankUSD.toFixed(2)},USD,"Salary June 2026 ${e.staffId}"`
+        ).join('\n');
+        return headers + rows;
+      }
+    },
+    {
+      id: 'acleda-bulk-transfer',
+      title: 'ACLEDA Bank CSV Payroll Transfer',
+      description: 'Corporate ACLEDA format matching standard salary schedules. Auto-calculates equivalents in KHR for domestic payroll runs.',
+      icon: Archive,
+      color: 'text-violet-500 bg-violet-50 dark:bg-violet-950/25',
+      filename: 'acleda_payroll_transfers_2026.csv',
+      dataGenerator: () => {
+        const headers = 'No,Name,Account,Amount KHR,Details\n';
+        const rows = processedData.map(e =>
+          `${e.id},"${e.name}","${e.bankAcc}",${(e.netBankUSD * 4050).toFixed(0)},"Corporate Salary"`
+        ).join('\n');
+        return headers + rows;
       }
     }
   ];
@@ -216,15 +218,18 @@ export default function ReportsExporter({ processedData, onTriggerToast }: Repor
         })}
       </div>
 
-      <div className="mt-6 p-4 bg-amber-50 dark:bg-amber-950/15 border border-amber-200/50 dark:border-amber-900/20 rounded-2xl flex items-start gap-3">
-        <ShieldAlert className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
-        <div>
-          <h4 className="text-xs font-bold text-amber-700 dark:text-amber-400">Compliance & Privacy Notice</h4>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+      <details className="mt-6 group">
+        <summary className="flex items-center gap-2 cursor-pointer text-[11px] font-semibold text-amber-600 dark:text-amber-400 hover:text-amber-500 transition">
+          <ShieldAlert className="w-4 h-4" />
+          Compliance & Privacy Notice
+          <svg className="w-3 h-3 ml-auto group-open:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+        </summary>
+        <div className="mt-3 p-4 bg-amber-50 dark:bg-amber-950/15 border border-amber-200/50 dark:border-amber-900/20 rounded-2xl">
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
             These files contain personal identifiable information (PII) of employees such as salary amounts and ABA/ACLEDA bank account routing details. Ensure secure file transport protocols when transmitting exports outside of the sandbox.
           </p>
         </div>
-      </div>
+      </details>
 
     </div>
   );
