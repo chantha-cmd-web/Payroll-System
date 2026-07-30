@@ -693,8 +693,7 @@ export default function PayrollProcessor({
                     <EditableCell empId={emp.id} field="spouse" value={emp.spouse} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown} />
                     <EditableCell empId={emp.id} field="kids" value={emp.kids} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
                       textColor="text-slate-500 font-semibold" isCurrency={false} />
-                    <EditableCell empId={emp.id} field="allowance" value={emp.allowance} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
-                      textColor="text-slate-500" />
+                    <td className="p-3 font-semibold text-slate-700 dark:text-slate-300 font-mono text-[11px]">{formatKHR((emp.spouse ? 150000 : 0) + emp.kids * 150000)}</td>
                     <td className="p-3 font-mono text-[11px] bg-amber-50/20 dark:bg-amber-950/5 text-slate-700 dark:text-slate-300">{formatKHR(emp.taxBaseKHR)}</td>
                     <td className="p-3 font-mono font-bold bg-amber-50/20 dark:bg-amber-950/5 text-amber-600 dark:text-amber-500 text-center">{emp.taxRate}</td>
                     <td className="p-3 font-mono text-[11px] text-rose-500 bg-amber-50/20 dark:bg-amber-950/5 font-semibold">{formatKHR(emp.taxKHR)}</td>
@@ -782,8 +781,7 @@ export default function PayrollProcessor({
                     <EditableCell empId={emp.id} field="spouse" value={emp.spouse} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown} />
                     <EditableCell empId={emp.id} field="kids" value={emp.kids} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
                       textColor="text-slate-500 font-semibold" isCurrency={false} />
-                    <EditableCell empId={emp.id} field="allowance" value={emp.allowance} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
-                      textColor="text-slate-500" />
+                    <td className="p-3 font-semibold text-slate-700 dark:text-slate-300 font-mono text-[11px]">{formatKHR((emp.spouse ? 150000 : 0) + emp.kids * 150000)}</td>
                     <td className="p-3 font-mono text-[11px] bg-amber-50/20 dark:bg-amber-950/5 text-slate-700 dark:text-slate-300">{formatKHR(emp.taxBaseKHR)}</td>
                     <td className="p-3 font-mono font-bold bg-amber-50/20 dark:bg-amber-950/5 text-amber-600 dark:text-amber-500 text-center">{emp.taxRate}</td>
                     <td className="p-3 font-mono text-[11px] text-rose-500 bg-amber-50/20 dark:bg-amber-950/5 font-semibold">{formatKHR(emp.taxKHR)}</td>
