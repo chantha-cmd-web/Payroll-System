@@ -135,8 +135,8 @@ export default function EmployeeMaster({
         const wsname = wb.SheetNames[0];
         const ws = wb.Sheets[wsname];
         
-        // Use header: 1 to get an array of arrays
-        const data = XLSX.utils.sheet_to_json(ws, { header: 1 }) as any[][];
+        // Use header: 1 to get an array of arrays. raw: false preserves Excel display format (e.g. leading zeros in bank account numbers)
+        const data = XLSX.utils.sheet_to_json(ws, { header: 1, raw: false }) as any[][];
         if (data.length < 2) {
           if (onTriggerToast) onTriggerToast('Import Failed', 'No valid rows found in Excel.', 'warning');
           else alert('No valid rows found in Excel.');
@@ -197,11 +197,12 @@ export default function EmployeeMaster({
          });
 
         const parseNumber = (val: any, defaultVal: number = 0) => {
-           if (typeof val === 'number') return val;
-           if (!val) return defaultVal;
-           const parsed = Number(String(val).replace(/,/g, '').trim());
-           return isNaN(parsed) ? defaultVal : parsed;
-        };
+            if (typeof val === 'number') return val;
+            if (!val) return defaultVal;
+            const cleaned = String(val).replace(/[^0-9.\-]/g, '').trim();
+            const parsed = Number(cleaned);
+            return isNaN(parsed) ? defaultVal : parsed;
+         };
 
         let importedCount = 0;
         let autoIdCounter = 1;
