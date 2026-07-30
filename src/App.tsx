@@ -496,7 +496,7 @@ export default function App() {
       let prepayAmount = 0;
       if (emp.status === 'TT') {
         prepayAmount = basePay / 2;
-      } else if (emp.status === 'UN' || emp.status === 'ML') {
+      } else if (emp.status === 'UN' || emp.status === 'ML' || emp.status === 'SH') {
         prepayAmount = 0;
       } else if (emp.status === 'T' || emp.status === 'W') {
         prepayAmount = basePay;
