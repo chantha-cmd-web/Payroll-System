@@ -480,14 +480,16 @@ export default function App() {
       let basePay = emp.basic;
       let calculatedAbsence = emp.absence;
       let calculatedOT = emp.ot;
+      let calculatedAfterSchool = 0;
 
       if (emp.employmentType === 'Part-Time') {
         basePay = Number((emp.hourlyRate * emp.presentHours).toFixed(2));
         calculatedAbsence = Number((emp.absenceHours * emp.hourlyRate).toFixed(2));
       } else if (emp.employmentType === 'Semi-Full-Time') {
-        basePay = emp.basic; // Removed scheduleHours, Semi-Full-Time base pay comes from Basic Salary
+        basePay = emp.basic;
         calculatedAbsence = Number((emp.absenceHours * emp.hourlyRate).toFixed(2));
         calculatedOT = Number((emp.substituteHours * emp.hourlyRate).toFixed(2));
+        calculatedAfterSchool = Number((emp.afterSchool * emp.hourlyRate).toFixed(2));
       }
 
       // 12. Pre. Pay / Percentage auto calculation based on status
@@ -507,7 +509,7 @@ export default function App() {
       
       // Sum from Prepay until Seniority / GEP (columns 12 to 19)
       // Using exact column values to match Excel SUM(S72:Z72), applying signs from headers
-      const rawGross = prepayAmount - calculatedAbsence + emp.maternity + calculatedOT + emp.caAdd - emp.caDed - emp.nssf + emp.seniority;
+      const rawGross = prepayAmount - calculatedAbsence + emp.maternity + calculatedOT + emp.caAdd - emp.caDed - emp.nssf + emp.seniority + calculatedAfterSchool;
       const computedGross = Math.round(rawGross * 100) / 100;
       const grossSalaryUSD = emp.customGrossUSD !== undefined ? emp.customGrossUSD : computedGross;
       
