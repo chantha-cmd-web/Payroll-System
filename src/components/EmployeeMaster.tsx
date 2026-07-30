@@ -324,7 +324,7 @@ export default function EmployeeMaster({
         ...commonHeaders,
         'Basic Salary', 'Prepay %', 'Absence(-)', 'Maternity(+)', 'OT(+)',
         'Cash Advance(+)', 'Cash Advance(-)', 'NSSF(-)', 'Seniority',
-        'Spouse', 'Kids', 'Allowance', 'SD Return', 'Prov Fund',
+        'Spouse', 'Kids', 'Allowance', 'SD Return (+)/ Visa Extension Work Permit (+)', 'Prov Fund',
         'Bank Acc', 'Email', 'Remarks', 'Status', ...typeSuffix
       ];
     } else if (activeTab === 'Semi-Full-Time') {
@@ -332,7 +332,7 @@ export default function EmployeeMaster({
         ...commonHeaders,
         'Basic Salary', 'Prepay %', 'Other', 'Maternity(+)', 'Rate (Hourly)', 'Schedule Hours',
         'Cash Advance(+)', 'NSSF(-)', 'After School Hours', 'Seniority',
-        'Spouse', 'Kids', 'Allowance', 'SD Return', 'Adjust Error TOS/NSSF', 'Work Book (-)',
+        'Spouse', 'Kids', 'Allowance', 'SD Return (+)/ Visa Extension Work Permit (+)', 'Adjust Error TOS/NSSF', 'Work Book (-)',
         'Bank Acc', 'Email', 'Remarks', 'Status', ...typeSuffix
       ];
     } else {
