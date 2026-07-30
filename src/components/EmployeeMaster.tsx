@@ -72,6 +72,8 @@ export default function EmployeeMaster({
     allowance: 0,
     sdReturn: 0,
     provFund: 0,
+    group: '',
+    savingAmt: 0,
     bankAcc: '',
     email: '',
     remarks: '',
@@ -189,6 +191,8 @@ export default function EmployeeMaster({
                else if (norm.includes('allowance')) columnIndexMap[24] = index;
                else if (norm.includes('sdreturn') || norm.includes('visa')) columnIndexMap[30] = index;
                else if (norm.includes('prov')) columnIndexMap[31] = index;
+               else if (norm.includes('group')) columnIndexMap[110] = index;
+               else if (norm.includes('savingamt') || (norm.includes('saving') && norm.includes('amt'))) columnIndexMap[111] = index;
                else if (norm.includes('bank') && norm.includes('acc')) columnIndexMap[33] = index;
                else if (norm.includes('email')) columnIndexMap[34] = index;
                else if (norm.includes('remark')) columnIndexMap[35] = index;
@@ -275,8 +279,10 @@ export default function EmployeeMaster({
                kids: parseNumber(getValue(23, 0), 0),
                allowance: parseNumber(getValue(24, 0), 0),
                sdReturn: parseNumber(getValue(30, 0), 0),
-               provFund: parseNumber(getValue(31, 0), 0),
-               bankAcc: String(getValue(33, '')),
+                provFund: parseNumber(getValue(31, 0), 0),
+                group: String(getValue(110, '')),
+                savingAmt: parseNumber(getValue(111, 0), 0),
+                bankAcc: String(getValue(33, '')),
                email: String(getValue(34, '')),
                remarks: String(getValue(35, '')),
                status: String(getValue(102, 'W')).toUpperCase(),
@@ -324,7 +330,8 @@ export default function EmployeeMaster({
         ...commonHeaders,
         'Basic Salary', 'Prepay %', 'Absence(-)', 'Maternity(+)', 'OT(+)',
         'Cash Advance(+)', 'Cash Advance(-)', 'NSSF(-)', 'Seniority',
-        'Spouse', 'Kids', 'Allowance', 'SD Return (+)/ Visa Extension Work Permit (+)', 'Prov Fund',
+        'Spouse', 'Kids', 'Allowance', 'SD Return (+)/ Visa Extension Work Permit (+)',
+        'Other', 'Group', 'Saving AMT',
         'Bank Acc', 'Email', 'Remarks', 'Status', ...typeSuffix
       ];
     } else if (activeTab === 'Semi-Full-Time') {
@@ -802,6 +809,16 @@ export default function EmployeeMaster({
                   <div>
                     <label className="block text-[10px] font-semibold text-rose-500 mb-1">Provident Fund (-)</label>
                     <input type="number" value={formData.provFund} onChange={(e) => setFormData({ ...formData, provFund: Number(e.target.value) })}
+                      className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-800 rounded-lg text-xs focus:outline-none focus:border-blue-500" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Group</label>
+                    <input type="text" value={formData.group} onChange={(e) => setFormData({ ...formData, group: e.target.value })}
+                      className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-800 rounded-lg text-xs focus:outline-none focus:border-blue-500" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Saving AMT</label>
+                    <input type="number" value={formData.savingAmt} onChange={(e) => setFormData({ ...formData, savingAmt: Number(e.target.value) })}
                       className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-800 rounded-lg text-xs focus:outline-none focus:border-blue-500" />
                   </div>
                 </div>

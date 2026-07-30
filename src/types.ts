@@ -47,6 +47,8 @@ export interface Employee {
   allowance: number; // Tax-exempt / specific allowance (USD)
   sdReturn: number; // Visa / special deduction return
   provFund: number; // Provident fund deduction
+  group: string;
+  savingAmt: number;
   bankAcc: string;
   email: string;
   remarks: string;

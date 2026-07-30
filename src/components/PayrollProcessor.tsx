@@ -418,41 +418,43 @@ export default function PayrollProcessor({
               </>
             ) : isFullTime ? (
               <tr className="border-b border-slate-200 dark:border-slate-850">
-                <th className="p-3.5 sticky left-0 bg-slate-100 dark:bg-slate-800 z-30 font-bold">1. No.</th>
-                <th className="p-3.5 sticky left-12 bg-slate-100 dark:bg-slate-800 z-30 font-bold">2. Staff ID</th>
-                <th className="p-3.5 sticky left-32 bg-slate-100 dark:bg-slate-800 z-30 font-bold border-r border-slate-200 dark:border-slate-700 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">3. Names</th>
-                <th className="p-3.5 font-bold">4. Nationality</th>
-                <th className="p-3.5 font-bold">5. Position</th>
-                <th className="p-3.5 font-bold">6. Department</th>
-                <th className="p-3.5 font-bold">7. Campus</th>
-                <th className="p-3.5 font-bold">9. DOJ (Cal. Eff. Date)</th>
-                <th className="p-3.5 font-bold">10. Employment Date</th>
-                <th className="p-3.5 font-bold bg-blue-50/40 dark:bg-blue-950/10">11. Basic Salary</th>
-                <th className="p-3.5 font-bold">12. Pre. Pay / Percentage</th>
-                <th className="p-3.5 font-bold text-rose-500">13. Absence (-)</th>
-                <th className="p-3.5 font-bold text-emerald-500">14. Maternity (+)</th>
-                <th className="p-3.5 font-bold text-emerald-500">15. OT (+)</th>
-                <th className="p-3.5 font-bold text-emerald-500">16. Cash Advance (+)/Seniority</th>
-                <th className="p-3.5 font-bold text-rose-500">17. Cash Advance (-)</th>
-                <th className="p-3.5 font-bold text-rose-500">18. Provident with NSSF (-)</th>
-                <th className="p-3.5 font-bold">19. Seniority/ GEP</th>
-                <th className="p-3.5 font-bold bg-brand-50/40 dark:bg-brand-950/10 text-brand-600 dark:text-brand-400">20. Gross Salary</th>
-                <th className="p-3.5 font-bold">21. Salary to be Paid (KHR)</th>
-                <th className="p-3.5 font-bold text-center">22. Spouse</th>
-                <th className="p-3.5 font-bold text-center">23. Minor Children</th>
-                <th className="p-3.5 font-bold">24. Allowance</th>
-                <th className="p-3.5 font-bold bg-amber-50/30 dark:bg-amber-950/10 text-amber-600">25. Salary Tax Calculation Base</th>
-                <th className="p-3.5 font-bold text-center bg-amber-50/30 dark:bg-amber-950/10 text-amber-600">26. Tax Rate</th>
-                <th className="p-3.5 font-bold bg-amber-50/30 dark:bg-amber-950/10 text-amber-600">27. Tax on Salary (KHR)</th>
-                <th className="p-3.5 font-bold bg-amber-50/30 dark:bg-amber-950/10 text-amber-600">28. Tax on Salary ($)</th>
-                <th className="p-3.5 font-bold text-slate-800 dark:text-slate-200">29. Total Salary After Tax ($)</th>
-                <th className="p-3.5 font-bold text-emerald-500">30. SD Return (+)/ Visa Extension  Work Permit (+)</th>
-                <th className="p-3.5 font-bold text-rose-500">31. Providence Fund</th>
-                <th className="p-3.5 font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">32. Salary into Bank</th>
-                <th className="p-3.5 font-bold">33. Bank Account Number</th>
-                <th className="p-3.5 font-bold">34. Email</th>
-                <th className="p-3.5 font-bold">35. Remarks</th>
-                <th className="p-3.5 font-bold">36. Gross for Summary</th>
+                <th className="p-3.5 sticky left-0 bg-slate-100 dark:bg-slate-800 z-30 font-bold">No.</th>
+                <th className="p-3.5 sticky left-12 bg-slate-100 dark:bg-slate-800 z-30 font-bold">Staff ID</th>
+                <th className="p-3.5 sticky left-32 bg-slate-100 dark:bg-slate-800 z-30 font-bold border-r border-slate-200 dark:border-slate-700 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Names</th>
+                <th className="p-3.5 font-bold">Nationality</th>
+                <th className="p-3.5 font-bold">Position</th>
+                <th className="p-3.5 font-bold">Department</th>
+                <th className="p-3.5 font-bold">Campus</th>
+                <th className="p-3.5 font-bold">DOJ(Cal. Eff. Date)</th>
+                <th className="p-3.5 font-bold">Employment Date</th>
+                <th className="p-3.5 font-bold bg-blue-50/40 dark:bg-blue-950/10">Basic Salary</th>
+                <th className="p-3.5 font-bold">Pre. Pay / Percentage</th>
+                <th className="p-3.5 font-bold text-rose-500">Abs(-)</th>
+                <th className="p-3.5 font-bold text-emerald-500">Maternity</th>
+                <th className="p-3.5 font-bold text-emerald-500">OT (+)</th>
+                <th className="p-3.5 font-bold text-emerald-500">Cash Advance (+)</th>
+                <th className="p-3.5 font-bold text-rose-500">Cash Advance (-) / OT</th>
+                <th className="p-3.5 font-bold text-rose-500">Provident with NSSF(-)</th>
+                <th className="p-3.5 font-bold">PTT/GEP</th>
+                <th className="p-3.5 font-bold bg-brand-50/40 dark:bg-brand-950/10 text-brand-600 dark:text-brand-400">G.Salary</th>
+                <th className="p-3.5 font-bold">Salary to be Paid (KHR)</th>
+                <th className="p-3.5 font-bold text-center">Spouse</th>
+                <th className="p-3.5 font-bold text-center">Minor Children</th>
+                <th className="p-3.5 font-bold">Allawance</th>
+                <th className="p-3.5 font-bold bg-amber-50/30 dark:bg-amber-950/10 text-amber-600">Salary Tax Calculation Base</th>
+                <th className="p-3.5 font-bold text-center bg-amber-50/30 dark:bg-amber-950/10 text-amber-600">Tax Rate</th>
+                <th className="p-3.5 font-bold bg-amber-50/30 dark:bg-amber-950/10 text-amber-600">TOS (KHR)</th>
+                <th className="p-3.5 font-bold bg-amber-50/30 dark:bg-amber-950/10 text-amber-600">TOS ($)</th>
+                <th className="p-3.5 font-bold text-slate-800 dark:text-slate-200">Total Salary After Tax ($)</th>
+                <th className="p-3.5 font-bold text-indigo-500">Other</th>
+                <th className="p-3.5 font-bold text-emerald-500">Work Permit (+)</th>
+                <th className="p-3.5 font-bold">Group</th>
+                <th className="p-3.5 font-bold">Saving AMT</th>
+                <th className="p-3.5 font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">Bank</th>
+                <th className="p-3.5 font-bold">Bank Account Number</th>
+                <th className="p-3.5 font-bold">Email</th>
+                <th className="p-3.5 font-bold">Remarks</th>
+                <th className="p-3.5 font-bold">Gross for Summary</th>
               </tr>
             ) : (
               <tr className="border-b border-slate-200 dark:border-slate-850">
@@ -700,10 +702,14 @@ export default function PayrollProcessor({
                     <td className="p-3 font-mono text-[11px] text-rose-500 bg-amber-50/20 dark:bg-amber-950/5 font-semibold">{formatKHR(emp.taxKHR)}</td>
                     <td className="p-3 text-rose-500 bg-amber-50/20 dark:bg-amber-950/5 font-semibold">{formatUSD(emp.taxUSD)}</td>
                     <td className="p-3 font-semibold text-slate-800 dark:text-slate-200">{formatUSD(emp.salaryAfterTaxUSD)}</td>
+                    <EditableCell empId={emp.id} field="other" value={emp.other} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-indigo-600 dark:text-indigo-400 font-semibold" />
                     <EditableCell empId={emp.id} field="sdReturn" value={emp.sdReturn} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
                       textColor="text-emerald-600 dark:text-emerald-400 font-semibold" />
-                    <EditableCell empId={emp.id} field="provFund" value={emp.provFund} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
-                      textColor="text-rose-600 dark:text-rose-400 font-semibold" />
+                    <EditableCell empId={emp.id} field="group" value={emp.group} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-slate-600 dark:text-slate-400" isCurrency={false} />
+                    <EditableCell empId={emp.id} field="savingAmt" value={emp.savingAmt} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-slate-600 dark:text-slate-400 font-semibold" />
                     <td className="p-3 bg-emerald-500/10 font-bold text-emerald-600 dark:text-emerald-400 text-sm">{formatUSD(emp.netBankUSD)}</td>
                     <EditableCell empId={emp.id} field="bankAcc" value={emp.bankAcc} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
                       textColor="text-slate-400" isCurrency={false} />
