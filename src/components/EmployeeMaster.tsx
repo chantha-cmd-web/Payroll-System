@@ -297,6 +297,50 @@ export default function EmployeeMaster({
     reader.readAsBinaryString(file);
   };
 
+  const handleDownloadTemplate = () => {
+    const wb = XLSX.utils.book_new();
+    const commonHeaders = [
+      'Staff ID', 'Name', 'Nationality', 'Position', 'Department', 'Campus',
+      'DOJ', 'Emp Date'
+    ];
+    const typeSuffix = ['Type'];
+
+    let headers: string[];
+    if (activeTab === 'Full-Time') {
+      headers = [
+        ...commonHeaders,
+        'Basic Salary', 'Prepay %', 'Absence(-)', 'Maternity(+)', 'OT(+)',
+        'Cash Advance(+)', 'Cash Advance(-)', 'NSSF(-)', 'Seniority',
+        'Spouse', 'Kids', 'Allowance', 'SD Return', 'Prov Fund',
+        'Bank Acc', 'Email', 'Remarks', 'Status', ...typeSuffix
+      ];
+    } else if (activeTab === 'Semi-Full-Time') {
+      headers = [
+        ...commonHeaders,
+        'Basic Salary', 'Hourly Rate', 'Schedule Hours', 'Absence Hours', 'Substitute Hours',
+        'Prepay %', 'Absence(-)', 'Maternity(+)', 'OT(+)',
+        'Cash Advance(+)', 'Cash Advance(-)', 'NSSF(-)', 'Seniority',
+        'Spouse', 'Kids', 'Allowance', 'SD Return', 'Prov Fund',
+        'Bank Acc', 'Email', 'Remarks', 'Status', ...typeSuffix
+      ];
+    } else {
+      headers = [
+        ...commonHeaders,
+        'Hourly Rate', 'Present Hours', 'Absence Hours',
+        'Prepay %', 'Absence(-)', 'Maternity(+)', 'OT(+)',
+        'Cash Advance(+)', 'Cash Advance(-)', 'NSSF(-)', 'Seniority',
+        'Spouse', 'Kids', 'Allowance', 'SD Return', 'Prov Fund',
+        'Bank Acc', 'Email', 'Remarks', 'Status', ...typeSuffix
+      ];
+    }
+
+    const ws = XLSX.utils.aoa_to_sheet([headers]);
+    ws['!cols'] = headers.map(() => ({ wch: 18 }));
+    XLSX.utils.book_append_sheet(wb, ws, 'Template');
+    const typeLabel = activeTab === 'Part-Time' ? 'PT' : activeTab === 'Semi-Full-Time' ? 'SFT' : 'FT';
+    XLSX.writeFile(wb, `${typeLabel}_Import_Template.xlsx`);
+  };
+
   return (
     <div className="flex-grow flex flex-col md:flex-row gap-6 overflow-hidden h-full">
       {/* Search and List Side */}
@@ -361,6 +405,13 @@ export default function EmployeeMaster({
             >
               <Upload className="w-3.5 h-3.5" />
               Import
+            </button>
+            <button
+              onClick={handleDownloadTemplate}
+              className="px-3 py-2 bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-500/10 dark:hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-semibold rounded-xl transition flex items-center gap-1.5"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              Template
             </button>
 
             {onResetData && (
