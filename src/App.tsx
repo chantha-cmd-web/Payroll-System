@@ -521,9 +521,9 @@ export default function App() {
       const computedSalaryPaidKHR = grossSalaryUSD * exchangeRate;
       const salaryPaidKHR = emp.customSalaryPaidKHR !== undefined ? emp.customSalaryPaidKHR : computedSalaryPaidKHR;
 
-      // 3. Tax relief: Allowance (1 + kids) × 150,000 KHR
+      // 3. Tax relief: Allowance = (Spouse + Kids) × 150,000 KHR
       // 4. Tax Base = IF(SalaryPaidKHR=0, 0, SalaryPaidKHR - Allowance)
-      const allowanceKHR = (1 + emp.kids) * 150000;
+      const allowanceKHR = ((emp.spouse ? 1 : 0) + emp.kids) * 150000;
       const taxBaseKHR = salaryPaidKHR === 0 ? 0 : Math.max(0, salaryPaidKHR - allowanceKHR);
 
       // 5. Official progressive tax schedules and rate calculations
