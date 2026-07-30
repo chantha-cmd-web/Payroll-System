@@ -389,6 +389,7 @@ export default function PayrollProcessor({
                   <th rowSpan={2} className="p-3.5 sticky left-0 bg-slate-100 dark:bg-slate-800 z-30 font-bold border-r border-slate-200 dark:border-slate-700">No.</th>
                   <th rowSpan={2} className="p-3.5 sticky left-12 bg-slate-100 dark:bg-slate-800 z-30 font-bold border-r border-slate-200 dark:border-slate-700">Staff ID</th>
                   <th rowSpan={2} className="p-3.5 sticky left-32 bg-slate-100 dark:bg-slate-800 z-30 font-bold border-r border-slate-200 dark:border-slate-700 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Names</th>
+                  <th rowSpan={2} className="p-3.5 font-bold border-r border-slate-200 dark:border-slate-700 text-center">Nationality</th>
                   <th rowSpan={2} className="p-3.5 font-bold border-r border-slate-200 dark:border-slate-700 text-center">Position</th>
                   <th rowSpan={2} className="p-3.5 font-bold border-r border-slate-200 dark:border-slate-700 text-center">Campus</th>
                   <th rowSpan={2} className="p-3.5 font-bold border-r border-slate-200 dark:border-slate-700 text-center">Start Date</th>
@@ -498,21 +499,20 @@ export default function PayrollProcessor({
                   className={`p-3 sticky left-32 bg-white dark:bg-[#0B0F19] z-10 border-r border-slate-200 dark:border-slate-800 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] cursor-pointer select-none relative group h-12 transition`}
                 />
 
-                {!isPartTime && (
-                  <EditableCell
-                    empId={emp.id}
-                    field="nat"
-                    value={emp.nat}
-                    editingCell={editingCell}
-                    editValue={editValue}
-                    onStartEdit={handleStartEdit}
-                    onChangeValue={setEditValue}
-                    onSaveEdit={handleSaveEdit}
-                    onKeyDown={handleKeyDown}
-                    textColor="text-slate-500"
-                    isCurrency={false}
-                  />
-                )}
+                <EditableCell
+                  empId={emp.id}
+                  field="nat"
+                  value={emp.nat}
+                  editingCell={editingCell}
+                  editValue={editValue}
+                  onStartEdit={handleStartEdit}
+                  onChangeValue={setEditValue}
+                  onSaveEdit={handleSaveEdit}
+                  onKeyDown={handleKeyDown}
+                  textColor="text-slate-500"
+                  isCurrency={false}
+                  className={isPartTime ? "p-3 border-r border-slate-100 dark:border-slate-800 text-center cursor-pointer select-none group h-12 transition hover:bg-slate-100/60 dark:hover:bg-slate-800/40" : undefined}
+                />
 
                 <EditableCell
                   empId={emp.id}
