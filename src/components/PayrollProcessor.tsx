@@ -486,6 +486,7 @@ export default function PayrollProcessor({
                 <th className="p-3.5 font-bold bg-amber-50/30 dark:bg-amber-950/10 text-amber-600">TOS (KHR)</th>
                 <th className="p-3.5 font-bold bg-amber-50/30 dark:bg-amber-950/10 text-amber-600">TOS ($)</th>
                 <th className="p-3.5 font-bold text-slate-800 dark:text-slate-200">Total Salary After Tax ($)</th>
+                <th className="p-3.5 font-bold text-emerald-500">SD Return (+)/ Visa Extension Work Permit (+)</th>
                 <th className="p-3.5 font-bold text-orange-500">Adjust error TOS/NSSF</th>
                 <th className="p-3.5 font-bold text-rose-500">Work Book (-)</th>
                 <th className="p-3.5 font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">Bank</th>
@@ -786,6 +787,8 @@ export default function PayrollProcessor({
                     <td className="p-3 font-mono text-[11px] text-rose-500 bg-amber-50/20 dark:bg-amber-950/5 font-semibold">{formatKHR(emp.taxKHR)}</td>
                     <td className="p-3 text-rose-500 bg-amber-50/20 dark:bg-amber-950/5 font-semibold">{formatUSD(emp.taxUSD)}</td>
                     <td className="p-3 font-semibold text-slate-800 dark:text-slate-200">{formatUSD(emp.salaryAfterTaxUSD)}</td>
+                    <EditableCell empId={emp.id} field="sdReturn" value={emp.sdReturn} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-emerald-600 dark:text-emerald-400 font-semibold" />
                     <EditableCell empId={emp.id} field="adjustError" value={emp.adjustError} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
                       textColor="text-orange-600 dark:text-orange-400 font-semibold" />
                     <EditableCell empId={emp.id} field="workBook" value={emp.workBook} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
