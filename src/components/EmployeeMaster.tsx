@@ -155,46 +155,46 @@ export default function EmployeeMaster({
         const headers = data[headerRowIdx] || [];
         const columnIndexMap: Record<number, number> = {};
 
-        headers.forEach((header: any, index: number) => {
-           if (typeof header === 'string') {
-              const norm = header.toLowerCase().replace(/[^a-z]/g, ''); // strip numbers too!
-              const rawLower = header.toLowerCase();
-              if (norm.includes('staffid')) columnIndexMap[2] = index;
-              else if (norm.includes('name')) columnIndexMap[3] = index;
-              else if (norm.includes('nat')) columnIndexMap[4] = index;
-              else if (norm.includes('pos')) columnIndexMap[5] = index;
-              else if (norm.includes('dept')) columnIndexMap[6] = index;
-              else if (norm.includes('campus')) columnIndexMap[7] = index;
-              else if (norm.includes('doj')) columnIndexMap[9] = index;
-              else if (norm.includes('empdate')) columnIndexMap[10] = index;
-              else if (norm.includes('basic')) columnIndexMap[11] = index;
-              else if (norm.includes('prepay') || norm.includes('percentage')) columnIndexMap[12] = index;
-              else if (norm.includes('rate') && !norm.includes('corporate')) columnIndexMap[100] = index;
-              else if (norm.includes('schedule') || norm.includes('teaching')) columnIndexMap[101] = index;
-              else if (norm.includes('abs')) columnIndexMap[13] = index;
-              else if (norm.includes('mat')) columnIndexMap[14] = index;
-              else if (norm.includes('ot')) columnIndexMap[15] = index;
-              else if (norm.includes('adv') && (rawLower.includes('+') || rawLower.includes('add') || norm.includes('senior'))) columnIndexMap[16] = index;
-              else if (norm.includes('adv') && (rawLower.includes('-') || rawLower.includes('ded') || rawLower.includes('minus'))) columnIndexMap[17] = index;
-              else if (norm.includes('nssf')) columnIndexMap[18] = index;
-              else if (norm.includes('seniority')) columnIndexMap[19] = index;
-              else if (norm.includes('gross') || norm.includes('gsalary')) columnIndexMap[20] = index;
-              else if (norm.includes('salarytobepaid') || (norm.includes('salary') && norm.includes('paid'))) columnIndexMap[21] = index;
-              else if (norm.includes('spouse')) columnIndexMap[22] = index;
-              else if (norm.includes('child') || norm.includes('kid')) columnIndexMap[23] = index;
-              else if (norm.includes('allowance')) columnIndexMap[24] = index;
-              else if (norm.includes('sdreturn') || norm.includes('visa')) columnIndexMap[30] = index;
-              else if (norm.includes('prov')) columnIndexMap[31] = index;
-              else if (norm.includes('bank') && norm.includes('acc')) columnIndexMap[33] = index;
-              else if (norm.includes('email')) columnIndexMap[34] = index;
-              else if (norm.includes('remark')) columnIndexMap[35] = index;
-              else if (norm.includes('status')) columnIndexMap[102] = index;
-               else if (norm.includes('present') || norm.includes('prhrs') || norm.includes('workhrs')) columnIndexMap[103] = index;
+         headers.forEach((header: any, index: number) => {
+            if (typeof header === 'string') {
+               const norm = header.toLowerCase().replace(/[^a-z]/g, '');
+               const rawLower = header.toLowerCase();
+               if (norm.includes('staffid') || norm === 'id' || norm === 'code' || norm === 'employeecode') columnIndexMap[2] = index;
+               else if (norm.includes('name')) columnIndexMap[3] = index;
+               else if (norm.includes('nat')) columnIndexMap[4] = index;
+               else if (norm.includes('pos')) columnIndexMap[5] = index;
+               else if (norm.includes('dept')) columnIndexMap[6] = index;
+               else if (norm.includes('campus')) columnIndexMap[7] = index;
+               else if (norm.includes('doj')) columnIndexMap[9] = index;
+               else if (norm.includes('empdate')) columnIndexMap[10] = index;
+               else if (norm.includes('basic')) columnIndexMap[11] = index;
+               else if (norm.includes('prepay') || norm.includes('percentage')) columnIndexMap[12] = index;
+               else if (norm.includes('rate') && !norm.includes('corporate')) columnIndexMap[100] = index;
+               else if (norm.includes('schedule') || norm.includes('teaching')) columnIndexMap[101] = index;
+               else if (norm.includes('abs')) columnIndexMap[13] = index;
+               else if (norm.includes('mat')) columnIndexMap[14] = index;
+               else if (norm.includes('ot')) columnIndexMap[15] = index;
+               else if (norm.includes('adv') && (rawLower.includes('+') || rawLower.includes('add') || norm.includes('senior'))) columnIndexMap[16] = index;
+               else if (norm.includes('adv') && (rawLower.includes('-') || rawLower.includes('ded') || rawLower.includes('minus'))) columnIndexMap[17] = index;
+               else if (norm.includes('nssf')) columnIndexMap[18] = index;
+               else if (norm.includes('seniority')) columnIndexMap[19] = index;
+               else if (norm.includes('gross') || norm.includes('gsalary')) columnIndexMap[20] = index;
+               else if (norm.includes('salarytobepaid') || (norm.includes('salary') && norm.includes('paid'))) columnIndexMap[21] = index;
+               else if (norm.includes('spouse')) columnIndexMap[22] = index;
+               else if (norm.includes('child') || norm.includes('kid')) columnIndexMap[23] = index;
+               else if (norm.includes('allowance')) columnIndexMap[24] = index;
+               else if (norm.includes('sdreturn') || norm.includes('visa')) columnIndexMap[30] = index;
+               else if (norm.includes('prov')) columnIndexMap[31] = index;
+               else if (norm.includes('bank') && norm.includes('acc')) columnIndexMap[33] = index;
+               else if (norm.includes('email')) columnIndexMap[34] = index;
+               else if (norm.includes('remark')) columnIndexMap[35] = index;
+               else if (norm.includes('status')) columnIndexMap[102] = index;
+               else if (norm.includes('present') || norm.includes('prhrs') || norm.includes('workhrs') || norm === 'hours') columnIndexMap[103] = index;
                else if (norm.includes('absence') && (norm.includes('hr') || norm.includes('hour'))) columnIndexMap[104] = index;
                else if (norm.includes('substitute') || norm.includes('subhrs') || norm.includes('subhr')) columnIndexMap[105] = index;
                else if (norm.includes('type') || norm.includes('employmenttype')) columnIndexMap[99] = index;
-           }
-        });
+            }
+         });
 
         const parseNumber = (val: any, defaultVal: number = 0) => {
            if (typeof val === 'number') return val;
@@ -204,22 +204,27 @@ export default function EmployeeMaster({
         };
 
         let importedCount = 0;
+        let autoIdCounter = 1;
         const newEmployeesToImport: Omit<Employee, 'id'>[] = [];
         for (let i = headerRowIdx + 1; i < data.length; i++) {
-           const row = data[i];
-           if (!row || !row.length) continue;
-           
-           const staffIdIdx = columnIndexMap[2] ?? 1;
-           const nameIdx = columnIndexMap[3] ?? 2;
-           
-           const staffId = row[staffIdIdx];
-           const name = row[nameIdx];
-           
-           if (name && staffId) {
-             const getValue = (idx: number, defaultVal: any = '') => {
-                const colIdx = columnIndexMap[idx];
-                return colIdx !== undefined ? row[colIdx] : defaultVal;
-             };
+            const row = data[i];
+            if (!row || !row.length) continue;
+            
+            const nameIdx = columnIndexMap[3];
+            if (nameIdx === undefined) continue;
+            const name = row[nameIdx];
+            if (!name) continue;
+            
+            const staffIdIdx = columnIndexMap[2];
+            let staffId = staffIdIdx !== undefined ? row[staffIdIdx] : '';
+            if (!staffId) {
+              staffId = `${activeTab === 'Part-Time' ? 'PT' : activeTab === 'Semi-Full-Time' ? 'SFT' : 'FT'}-${String(autoIdCounter++).padStart(3, '0')}`;
+            }
+
+            const getValue = (idx: number, defaultVal: any = '') => {
+               const colIdx = columnIndexMap[idx];
+               return colIdx !== undefined ? row[colIdx] : defaultVal;
+            };
 
              const rawType = String(getValue(99, '')).toLowerCase();
              let assignedType = activeTab;
@@ -264,11 +269,10 @@ export default function EmployeeMaster({
                status: String(getValue(102, 'W')).toUpperCase(),
                employmentType: assignedType
              });
-             importedCount++;
-           }
-        }
+              importedCount++;
+         }
 
-        if (newEmployeesToImport.length > 0) {
+         if (newEmployeesToImport.length > 0) {
           if (onBulkAddEmployees) {
             onBulkAddEmployees(newEmployeesToImport);
           } else {
