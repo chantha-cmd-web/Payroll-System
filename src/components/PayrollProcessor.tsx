@@ -415,52 +415,82 @@ export default function PayrollProcessor({
                   <th className="p-2 font-bold text-emerald-500 border-r border-slate-200 dark:border-slate-700 text-center">Total</th>
                 </tr>
               </>
+            ) : isFullTime ? (
+              <tr className="border-b border-slate-200 dark:border-slate-850">
+                <th className="p-3.5 sticky left-0 bg-slate-100 dark:bg-slate-800 z-30 font-bold">1. No.</th>
+                <th className="p-3.5 sticky left-12 bg-slate-100 dark:bg-slate-800 z-30 font-bold">2. Staff ID</th>
+                <th className="p-3.5 sticky left-32 bg-slate-100 dark:bg-slate-800 z-30 font-bold border-r border-slate-200 dark:border-slate-700 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">3. Names</th>
+                <th className="p-3.5 font-bold">4. Nationality</th>
+                <th className="p-3.5 font-bold">5. Position</th>
+                <th className="p-3.5 font-bold">6. Department</th>
+                <th className="p-3.5 font-bold">7. Campus</th>
+                <th className="p-3.5 font-bold">9. DOJ (Cal. Eff. Date)</th>
+                <th className="p-3.5 font-bold">10. Employment Date</th>
+                <th className="p-3.5 font-bold bg-blue-50/40 dark:bg-blue-950/10">11. Basic Salary</th>
+                <th className="p-3.5 font-bold">12. Pre. Pay / Percentage</th>
+                <th className="p-3.5 font-bold text-rose-500">13. Absence (-)</th>
+                <th className="p-3.5 font-bold text-emerald-500">14. Maternity (+)</th>
+                <th className="p-3.5 font-bold text-emerald-500">15. OT (+)</th>
+                <th className="p-3.5 font-bold text-emerald-500">16. Cash Advance (+)/Seniority</th>
+                <th className="p-3.5 font-bold text-rose-500">17. Cash Advance (-)</th>
+                <th className="p-3.5 font-bold text-rose-500">18. Provident with NSSF (-)</th>
+                <th className="p-3.5 font-bold">19. Seniority/ GEP</th>
+                <th className="p-3.5 font-bold bg-brand-50/40 dark:bg-brand-950/10 text-brand-600 dark:text-brand-400">20. Gross Salary</th>
+                <th className="p-3.5 font-bold">21. Salary to be Paid (KHR)</th>
+                <th className="p-3.5 font-bold text-center">22. Spouse</th>
+                <th className="p-3.5 font-bold text-center">23. Minor Children</th>
+                <th className="p-3.5 font-bold">24. Allowance</th>
+                <th className="p-3.5 font-bold bg-amber-50/30 dark:bg-amber-950/10 text-amber-600">25. Salary Tax Calculation Base</th>
+                <th className="p-3.5 font-bold text-center bg-amber-50/30 dark:bg-amber-950/10 text-amber-600">26. Tax Rate</th>
+                <th className="p-3.5 font-bold bg-amber-50/30 dark:bg-amber-950/10 text-amber-600">27. Tax on Salary (KHR)</th>
+                <th className="p-3.5 font-bold bg-amber-50/30 dark:bg-amber-950/10 text-amber-600">28. Tax on Salary ($)</th>
+                <th className="p-3.5 font-bold text-slate-800 dark:text-slate-200">29. Total Salary After Tax ($)</th>
+                <th className="p-3.5 font-bold text-emerald-500">30. SD Return (+)/ Visa Extension  Work Permit (+)</th>
+                <th className="p-3.5 font-bold text-rose-500">31. Providence Fund</th>
+                <th className="p-3.5 font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">32. Salary into Bank</th>
+                <th className="p-3.5 font-bold">33. Bank Account Number</th>
+                <th className="p-3.5 font-bold">34. Email</th>
+                <th className="p-3.5 font-bold">35. Remarks</th>
+                <th className="p-3.5 font-bold">36. Gross for Summary</th>
+              </tr>
             ) : (
               <tr className="border-b border-slate-200 dark:border-slate-850">
-                <th className="p-3.5 sticky left-0 bg-slate-100 dark:bg-slate-800 z-30 font-bold">{isFullTime ? '1. No.' : 'No.'}</th>
-                <th className="p-3.5 sticky left-12 bg-slate-100 dark:bg-slate-800 z-30 font-bold">{isFullTime ? '2. Staff ID' : 'Staff ID'}</th>
-                <th className="p-3.5 sticky left-32 bg-slate-100 dark:bg-slate-800 z-30 font-bold border-r border-slate-200 dark:border-slate-700 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
-                  {isFullTime ? '3. Names' : 'Names'}
-                </th>
-                <th className="p-3.5 font-bold">{isFullTime ? '4. Nationality' : 'Nationality'}</th>
-                <th className="p-3.5 font-bold">{isFullTime ? '5. Position' : 'Position'}</th>
-                <th className="p-3.5 font-bold">{isFullTime ? '6. Department' : 'Department'}</th>
-                <th className="p-3.5 font-bold">{isFullTime ? '7. Campus' : 'Campus'}</th>
-                <th className="p-3.5 font-bold">{isFullTime ? '9. DOJ (Cal. Eff. Date)' : 'DOJ(Cal. Eff. Date)'}</th>
-                <th className="p-3.5 font-bold">{isFullTime ? '10. Employment Date' : 'EmploymentDate'}</th>
-                <th className="p-3.5 font-bold bg-blue-50/40 dark:bg-blue-950/10">{isFullTime ? '11. Basic Salary' : 'Basic Salary'}</th>
-                <th className="p-3.5 font-bold">{isFullTime ? '12. Pre. Pay / Percentage' : 'Pre. Pay / Percentage'}</th>
-                {!isFullTime && <th className="p-3.5 font-bold text-blue-500">Hr Rate</th>}
-                {isPartTime && <th className="p-3.5 font-bold text-blue-600">Present Hrs</th>}
-                {!isFullTime && <th className="p-3.5 font-bold text-rose-500">Abs Hrs</th>}
-                {!isFullTime && !isPartTime && <th className="p-3.5 font-bold text-emerald-500">Sub Hrs</th>}
-                <th className="p-3.5 font-bold text-rose-500">{isFullTime ? '13. Absence (-)' : 'Abs(-)'}</th>
-                <th className="p-3.5 font-bold text-emerald-500">{isFullTime ? '14. Maternity (+)' : 'Maternity (+)'}</th>
-                <th className="p-3.5 font-bold text-emerald-500">{isFullTime ? '15. OT (+)' : 'OT (+)'}</th>
-                <th className="p-3.5 font-bold text-emerald-500">{isFullTime ? '16. Cash Advance (+)/Seniority' : 'Cash Advance (+)/Seniorit'}</th>
-                <th className="p-3.5 font-bold text-rose-500">{isFullTime ? '17. Cash Advance (-)' : 'Cash Advance (-)'}</th>
-                <th className="p-3.5 font-bold text-rose-500">{isFullTime ? '18. Provident with NSSF (-)' : 'Provident with NSSF(-)'}</th>
-                {!isFullTime && !isPartTime && <th className="p-3.5 font-bold text-indigo-500">After School Hrs</th>}
-                <th className="p-3.5 font-bold">{isFullTime ? '19. Seniority/ GEP' : 'Seniority/GEP'}</th>
-                <th className="p-3.5 font-bold bg-brand-50/40 dark:bg-brand-950/10 text-brand-600 dark:text-brand-400">
-                  {isFullTime ? '20. Gross Salary' : 'G.Salary'}
-                </th>
-                <th className="p-3.5 font-bold">{isFullTime ? '21. Salary to be Paid (KHR)' : 'Salary to be Paid (KHR)'}</th>
-                <th className="p-3.5 font-bold text-center">{isFullTime ? '22. Spouse' : 'Spouse'}</th>
-                <th className="p-3.5 font-bold text-center">{isFullTime ? '23. Minor Children' : 'Minor Children'}</th>
-                <th className="p-3.5 font-bold">{isFullTime ? '24. Allowance' : 'Allawance'}</th>
-                <th className="p-3.5 font-bold bg-amber-50/30 dark:bg-amber-950/10 text-amber-600">{isFullTime ? '25. Salary Tax Calculation Base' : 'Salary Tax Calculation Base'}</th>
-                <th className="p-3.5 font-bold text-center bg-amber-50/30 dark:bg-amber-950/10 text-amber-600">{isFullTime ? '26. Tax Rate' : 'Tax Rate'}</th>
-                <th className="p-3.5 font-bold bg-amber-50/30 dark:bg-amber-950/10 text-amber-600">{isFullTime ? '27. Tax on Salary (KHR)' : 'TOS (KHR)'}</th>
-                <th className="p-3.5 font-bold bg-amber-50/30 dark:bg-amber-950/10 text-amber-600">{isFullTime ? '28. Tax on Salary ($)' : 'TOS ($)'}</th>
-                <th className="p-3.5 font-bold text-slate-800 dark:text-slate-200">{isFullTime ? '29. Total Salary After Tax ($)' : 'Total Salary After Tax ($)'}</th>
-                <th className="p-3.5 font-bold text-emerald-500">{isFullTime ? '30. SD Return (+)/ Visa Extension  Work Permit (+)' : 'SD Return (+)/ Visa Extension  Work Permit (+)'}</th>
-                <th className="p-3.5 font-bold text-rose-500">{isFullTime ? '31. Providence Fund' : 'Providence Fund'}</th>
-                <th className="p-3.5 font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">{isFullTime ? '32. Salary into Bank' : 'Net Bank ($)'}</th>
-                <th className="p-3.5 font-bold">{isFullTime ? '33. Bank Account Number' : 'Bank Account Number'}</th>
-                <th className="p-3.5 font-bold">{isFullTime ? '34. Email' : 'Email'}</th>
-                <th className="p-3.5 font-bold">{isFullTime ? '35. Remarks' : 'Remarks'}</th>
-                <th className="p-3.5 font-bold">{isFullTime ? '36. Gross for Summary' : 'Gross for Summary'}</th>
+                <th className="p-3.5 sticky left-0 bg-slate-100 dark:bg-slate-800 z-30 font-bold">No.</th>
+                <th className="p-3.5 sticky left-12 bg-slate-100 dark:bg-slate-800 z-30 font-bold">Staff ID</th>
+                <th className="p-3.5 sticky left-32 bg-slate-100 dark:bg-slate-800 z-30 font-bold border-r border-slate-200 dark:border-slate-700 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Names</th>
+                <th className="p-3.5 font-bold">Nationality</th>
+                <th className="p-3.5 font-bold">Position</th>
+                <th className="p-3.5 font-bold">Department</th>
+                <th className="p-3.5 font-bold">Campus</th>
+                <th className="p-3.5 font-bold">DOJ(Cal. Eff. Date)</th>
+                <th className="p-3.5 font-bold">EmploymentDate</th>
+                <th className="p-3.5 font-bold bg-blue-50/40 dark:bg-blue-950/10">Basic Salary</th>
+                <th className="p-3.5 font-bold">Pre.Pay / Percentage</th>
+                <th className="p-3.5 font-bold text-indigo-500">Other</th>
+                <th className="p-3.5 font-bold text-emerald-500">Maternity (+)</th>
+                <th className="p-3.5 font-bold text-blue-500">Rate</th>
+                <th className="p-3.5 font-bold text-blue-500">Hour</th>
+                <th className="p-3.5 font-bold text-blue-500">Amount $</th>
+                <th className="p-3.5 font-bold text-emerald-500">Cash Advance (+)/Seniorit</th>
+                <th className="p-3.5 font-bold text-rose-500">Provident with NSSF(-)</th>
+                <th className="p-3.5 font-bold text-indigo-500">HRM/After school program</th>
+                <th className="p-3.5 font-bold">PTT/GEP</th>
+                <th className="p-3.5 font-bold bg-brand-50/40 dark:bg-brand-950/10 text-brand-600 dark:text-brand-400">G.Salary</th>
+                <th className="p-3.5 font-bold">Salary to be Paid (KHR)</th>
+                <th className="p-3.5 font-bold text-center">Spouse</th>
+                <th className="p-3.5 font-bold text-center">Minor Children</th>
+                <th className="p-3.5 font-bold">Allawance</th>
+                <th className="p-3.5 font-bold bg-amber-50/30 dark:bg-amber-950/10 text-amber-600">Salary Tax Calculation Base</th>
+                <th className="p-3.5 font-bold text-center bg-amber-50/30 dark:bg-amber-950/10 text-amber-600">Tax Rate</th>
+                <th className="p-3.5 font-bold bg-amber-50/30 dark:bg-amber-950/10 text-amber-600">TOS (KHR)</th>
+                <th className="p-3.5 font-bold bg-amber-50/30 dark:bg-amber-950/10 text-amber-600">TOS ($)</th>
+                <th className="p-3.5 font-bold text-slate-800 dark:text-slate-200">Total Salary After Tax ($)</th>
+                <th className="p-3.5 font-bold text-orange-500">Adjust error TOS/NSSF</th>
+                <th className="p-3.5 font-bold text-rose-500">Work Book (-)</th>
+                <th className="p-3.5 font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">Bank</th>
+                <th className="p-3.5 font-bold">Bank Account Number</th>
+                <th className="p-3.5 font-bold">Email</th>
+                <th className="p-3.5 font-bold">Remarks</th>
               </tr>
             )}
           </thead>
@@ -629,400 +659,148 @@ export default function PayrollProcessor({
                   />
                 )}
 
-                {/* 10. Basic */}
-                <EditableCell
-                  empId={emp.id}
-                  field="basic"
-                  value={emp.basic}
-                  editingCell={editingCell}
-                  editValue={editValue}
-                  onStartEdit={handleStartEdit}
-                  onChangeValue={setEditValue}
-                  onSaveEdit={handleSaveEdit}
-                  onKeyDown={handleKeyDown}
-                  textColor="text-slate-800 dark:text-slate-200 font-semibold bg-blue-50/20 dark:bg-blue-950/5"
-                  readOnly={!isFullTime}
-                  className={isPartTime ? "p-3 border-r border-slate-100 dark:border-slate-800 select-none group h-12 transition text-center" : undefined}
-                />
-
-                {/* 11. Prepay */}
-                <EditableCell
-                  empId={emp.id}
-                  field="prePayPct"
-                  value={emp.prepayAmount}
-                  editingCell={editingCell}
-                  editValue={editValue}
-                  onStartEdit={handleStartEdit}
-                  onChangeValue={setEditValue}
-                  onSaveEdit={handleSaveEdit}
-                  onKeyDown={handleKeyDown}
-                  textColor="text-slate-500 font-mono"
-                  isCurrency={false}
-                  className={isPartTime ? "p-3 border-r border-slate-100 dark:border-slate-800 cursor-pointer select-none group h-12 transition hover:bg-slate-100/60 dark:hover:bg-slate-800/40 text-center" : undefined}
-                />
-
-                {/* --- Editable Variables Columns for Non-Part-Time --- */}
-
-                {!isPartTime && !isFullTime && (
-                  <EditableCell
-                    empId={emp.id}
-                    field="hourlyRate"
-                    value={emp.hourlyRate}
-                    editingCell={editingCell}
-                    editValue={editValue}
-                    onStartEdit={handleStartEdit}
-                    onChangeValue={setEditValue}
-                    onSaveEdit={handleSaveEdit}
-                    onKeyDown={handleKeyDown}
-                    textColor="text-blue-600 dark:text-blue-400 font-semibold"
-                  />
-                )}
-
-                {!isPartTime && !isFullTime && (
-                  <EditableCell
-                    empId={emp.id}
-                    field="absenceHours"
-                    value={emp.absenceHours}
-                    editingCell={editingCell}
-                    editValue={editValue}
-                    onStartEdit={handleStartEdit}
-                    onChangeValue={setEditValue}
-                    onSaveEdit={handleSaveEdit}
-                    onKeyDown={handleKeyDown}
-                    textColor="text-rose-600 dark:text-rose-400 font-semibold"
-                    isCurrency={false}
-                  />
-                )}
-
-                {!isFullTime && !isPartTime && (
-                  <EditableCell
-                    empId={emp.id}
-                    field="substituteHours"
-                    value={emp.substituteHours}
-                    editingCell={editingCell}
-                    editValue={editValue}
-                    onStartEdit={handleStartEdit}
-                    onChangeValue={setEditValue}
-                    onSaveEdit={handleSaveEdit}
-                    onKeyDown={handleKeyDown}
-                    textColor="text-emerald-600 dark:text-emerald-400 font-semibold"
-                    isCurrency={false}
-                  />
-                )}
-
-                {!isPartTime && (
+                {/* === Basic + financial cells: FT / SFT / PT branches === */}
+                {isFullTime ? (
                   <>
-                    <EditableCell
-                      empId={emp.id}
-                      field="absence"
-                      value={emp.absence}
-                      editingCell={editingCell}
-                      editValue={editValue}
-                      onStartEdit={handleStartEdit}
-                      onChangeValue={setEditValue}
-                      onSaveEdit={handleSaveEdit}
-                      onKeyDown={handleKeyDown}
-                      textColor="text-rose-600 dark:text-rose-400 font-semibold"
-                      readOnly={!isFullTime}
-                    />
-                    <EditableCell
-                      empId={emp.id}
-                      field="maternity"
-                      value={emp.maternity}
-                      editingCell={editingCell}
-                      editValue={editValue}
-                      onStartEdit={handleStartEdit}
-                      onChangeValue={setEditValue}
-                      onSaveEdit={handleSaveEdit}
-                      onKeyDown={handleKeyDown}
-                      textColor="text-emerald-600 dark:text-emerald-400 font-semibold"
-                    />
-                    <EditableCell
-                      empId={emp.id}
-                      field="ot"
-                      value={emp.ot}
-                      editingCell={editingCell}
-                      editValue={editValue}
-                      onStartEdit={handleStartEdit}
-                      onChangeValue={setEditValue}
-                      onSaveEdit={handleSaveEdit}
-                      onKeyDown={handleKeyDown}
-                      textColor="text-emerald-600 dark:text-emerald-400 font-semibold"
-                      readOnly={!isFullTime}
-                    />
-                    <EditableCell
-                      empId={emp.id}
-                      field="caAdd"
-                      value={emp.caAdd}
-                      editingCell={editingCell}
-                      editValue={editValue}
-                      onStartEdit={handleStartEdit}
-                      onChangeValue={setEditValue}
-                      onSaveEdit={handleSaveEdit}
-                      onKeyDown={handleKeyDown}
-                      textColor="text-emerald-600 dark:text-emerald-400 font-semibold"
-                    />
-                    <EditableCell
-                      empId={emp.id}
-                      field="caDed"
-                      value={emp.caDed}
-                      editingCell={editingCell}
-                      editValue={editValue}
-                      onStartEdit={handleStartEdit}
-                      onChangeValue={setEditValue}
-                      onSaveEdit={handleSaveEdit}
-                      onKeyDown={handleKeyDown}
-                      textColor="text-rose-600 dark:text-rose-400 font-semibold"
-                    />
-                    <EditableCell
-                      empId={emp.id}
-                      field="nssf"
-                      value={emp.nssf}
-                      editingCell={editingCell}
-                      editValue={editValue}
-                      onStartEdit={handleStartEdit}
-                      onChangeValue={setEditValue}
-                      onSaveEdit={handleSaveEdit}
-                      onKeyDown={handleKeyDown}
-                      textColor="text-rose-600 dark:text-rose-400 font-semibold"
-                    />
-                    {!isFullTime && !isPartTime && (
-                      <EditableCell
-                        empId={emp.id}
-                        field="afterSchool"
-                        value={emp.afterSchool}
-                        editingCell={editingCell}
-                        editValue={editValue}
-                        onStartEdit={handleStartEdit}
-                        onChangeValue={setEditValue}
-                        onSaveEdit={handleSaveEdit}
-                        onKeyDown={handleKeyDown}
-                        textColor="text-indigo-600 dark:text-indigo-400 font-semibold"
-                        isCurrency={false}
-                      />
-                    )}
-                    <EditableCell
-                      empId={emp.id}
-                      field="seniority"
-                      value={emp.seniority}
-                      editingCell={editingCell}
-                      editValue={editValue}
-                      onStartEdit={handleStartEdit}
-                      onChangeValue={setEditValue}
-                      onSaveEdit={handleSaveEdit}
-                      onKeyDown={handleKeyDown}
-                      textColor="text-slate-800 dark:text-slate-200"
-                    />
-                  </>
-                )}
-
-                {/* Gross Columns */}
-                {isPartTime ? (
-                  <td className="p-3 bg-brand-50/20 dark:bg-brand-950/5 text-sm h-12 w-32 align-top text-center border-r border-brand-100 dark:border-brand-900/50">
-                    <input
-                      type="number"
-                      className="w-full bg-transparent border-b border-transparent focus:border-brand-300 text-center text-brand-700 dark:text-brand-300 font-bold focus:outline-none"
-                      value={emp.customGrossUSD !== undefined ? emp.customGrossUSD : ''}
-                      placeholder={emp.grossSalaryUSD.toString()}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        onUpdateField(emp.id, 'customGrossUSD', val === '' ? undefined : parseFloat(val));
-                      }}
-                    />
-                  </td>
-                ) : (
-                  <>
+                    <EditableCell empId={emp.id} field="basic" value={emp.basic} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-slate-800 dark:text-slate-200 font-semibold bg-blue-50/20 dark:bg-blue-950/5" />
+                    <EditableCell empId={emp.id} field="prePayPct" value={emp.prepayAmount} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-slate-500 font-mono" isCurrency={false} />
+                    <EditableCell empId={emp.id} field="absence" value={emp.absence} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-rose-600 dark:text-rose-400 font-semibold" />
+                    <EditableCell empId={emp.id} field="maternity" value={emp.maternity} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-emerald-600 dark:text-emerald-400 font-semibold" />
+                    <EditableCell empId={emp.id} field="ot" value={emp.ot} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-emerald-600 dark:text-emerald-400 font-semibold" readOnly={!isFullTime} />
+                    <EditableCell empId={emp.id} field="caAdd" value={emp.caAdd} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-emerald-600 dark:text-emerald-400 font-semibold" />
+                    <EditableCell empId={emp.id} field="caDed" value={emp.caDed} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-rose-600 dark:text-rose-400 font-semibold" />
+                    <EditableCell empId={emp.id} field="nssf" value={emp.nssf} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-rose-600 dark:text-rose-400 font-semibold" />
+                    <EditableCell empId={emp.id} field="seniority" value={emp.seniority} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-slate-800 dark:text-slate-200" />
                     <td className="p-3 bg-brand-50/20 dark:bg-brand-950/5 text-sm h-12 w-32 align-top">
-                      <input
-                        type="number"
-                        className="w-full bg-white/50 dark:bg-slate-800/50 border border-brand-200 dark:border-brand-800 rounded px-2 py-1 text-brand-700 dark:text-brand-300 font-bold focus:ring-2 focus:ring-brand-500 outline-none"
-                        value={emp.customGrossUSD !== undefined ? emp.customGrossUSD : ''}
-                        placeholder={emp.grossSalaryUSD.toString()}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          onUpdateField(emp.id, 'customGrossUSD', val === '' ? undefined : parseFloat(val));
-                        }}
-                      />
+                      <input type="number" className="w-full bg-white/50 dark:bg-slate-800/50 border border-brand-200 dark:border-brand-800 rounded px-2 py-1 text-brand-700 dark:text-brand-300 font-bold focus:ring-2 focus:ring-brand-500 outline-none"
+                        value={emp.customGrossUSD !== undefined ? emp.customGrossUSD : ''} placeholder={emp.grossSalaryUSD.toString()}
+                        onChange={(e) => { const val = e.target.value; onUpdateField(emp.id, 'customGrossUSD', val === '' ? undefined : parseFloat(val)); }} />
                     </td>
                     <td className="p-3 bg-slate-50/50 dark:bg-slate-900/50 text-[11px] h-12 w-32 align-top">
-                      <input
-                        type="number"
-                        className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-300 dark:border-slate-700 rounded px-2 py-1 text-slate-700 dark:text-slate-300 font-mono font-semibold focus:ring-2 focus:ring-brand-500 outline-none"
-                        value={emp.customSalaryPaidKHR !== undefined ? emp.customSalaryPaidKHR : ''}
-                        placeholder={emp.salaryPaidKHR.toString()}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          onUpdateField(emp.id, 'customSalaryPaidKHR', val === '' ? undefined : parseFloat(val));
-                        }}
-                      />
+                      <input type="number" className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-300 dark:border-slate-700 rounded px-2 py-1 text-slate-700 dark:text-slate-300 font-mono font-semibold focus:ring-2 focus:ring-brand-500 outline-none"
+                        value={emp.customSalaryPaidKHR !== undefined ? emp.customSalaryPaidKHR : ''} placeholder={emp.salaryPaidKHR.toString()}
+                        onChange={(e) => { const val = e.target.value; onUpdateField(emp.id, 'customSalaryPaidKHR', val === '' ? undefined : parseFloat(val)); }} />
                     </td>
+                    <EditableCell empId={emp.id} field="spouse" value={emp.spouse} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown} />
+                    <EditableCell empId={emp.id} field="kids" value={emp.kids} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-slate-500 font-semibold" isCurrency={false} />
+                    <EditableCell empId={emp.id} field="allowance" value={emp.allowance} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-slate-500" />
+                    <td className="p-3 font-mono text-[11px] bg-amber-50/20 dark:bg-amber-950/5 text-slate-700 dark:text-slate-300">{formatKHR(emp.taxBaseKHR)}</td>
+                    <td className="p-3 font-mono font-bold bg-amber-50/20 dark:bg-amber-950/5 text-amber-600 dark:text-amber-500 text-center">{emp.taxRate}</td>
+                    <td className="p-3 font-mono text-[11px] text-rose-500 bg-amber-50/20 dark:bg-amber-950/5 font-semibold">{formatKHR(emp.taxKHR)}</td>
+                    <td className="p-3 text-rose-500 bg-amber-50/20 dark:bg-amber-950/5 font-semibold">{formatUSD(emp.taxUSD)}</td>
+                    <td className="p-3 font-semibold text-slate-800 dark:text-slate-200">{formatUSD(emp.salaryAfterTaxUSD)}</td>
+                    <EditableCell empId={emp.id} field="sdReturn" value={emp.sdReturn} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-emerald-600 dark:text-emerald-400 font-semibold" />
+                    <EditableCell empId={emp.id} field="provFund" value={emp.provFund} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-rose-600 dark:text-rose-400 font-semibold" />
+                    <td className="p-3 bg-emerald-500/10 font-bold text-emerald-600 dark:text-emerald-400 text-sm">{formatUSD(emp.netBankUSD)}</td>
+                    <EditableCell empId={emp.id} field="bankAcc" value={emp.bankAcc} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-slate-400" isCurrency={false} />
+                    <EditableCell empId={emp.id} field="email" value={emp.email} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-slate-400" isCurrency={false} />
+                    <EditableCell empId={emp.id} field="remarks" value={emp.remarks} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-slate-400" isCurrency={false} />
+                    <td className="p-3 font-medium text-slate-600 dark:text-slate-400">{formatUSD(emp.grossForSummary)}</td>
                   </>
-                )}
-
-                {!isPartTime && (
+                ) : isPartTime ? (
                   <>
-                    <EditableCell
-                      empId={emp.id}
-                      field="spouse"
-                      value={emp.spouse}
-                      editingCell={editingCell}
-                      editValue={editValue}
-                      onStartEdit={handleStartEdit}
-                      onChangeValue={setEditValue}
-                      onSaveEdit={handleSaveEdit}
-                      onKeyDown={handleKeyDown}
-                    />
-                    <EditableCell
-                      empId={emp.id}
-                      field="kids"
-                      value={emp.kids}
-                      editingCell={editingCell}
-                      editValue={editValue}
-                      onStartEdit={handleStartEdit}
-                      onChangeValue={setEditValue}
-                      onSaveEdit={handleSaveEdit}
-                      onKeyDown={handleKeyDown}
-                      textColor="text-slate-500 font-semibold"
-                      isCurrency={false}
-                    />
-                    <EditableCell
-                      empId={emp.id}
-                      field="allowance"
-                      value={emp.allowance}
-                      editingCell={editingCell}
-                      editValue={editValue}
-                      onStartEdit={handleStartEdit}
-                      onChangeValue={setEditValue}
-                      onSaveEdit={handleSaveEdit}
-                      onKeyDown={handleKeyDown}
-                      textColor="text-slate-500"
-                    />
-                    <td className="p-3 font-mono text-[11px] bg-amber-50/20 dark:bg-amber-950/5 text-slate-700 dark:text-slate-300">
-                      {formatKHR(emp.taxBaseKHR)}
+                    <EditableCell empId={emp.id} field="basic" value={emp.basic} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-slate-800 dark:text-slate-200 font-semibold bg-blue-50/20 dark:bg-blue-950/5" readOnly={true}
+                      className="p-3 border-r border-slate-100 dark:border-slate-800 select-none group h-12 transition text-center" />
+                    <EditableCell empId={emp.id} field="prePayPct" value={emp.prepayAmount} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-slate-500 font-mono" isCurrency={false}
+                      className="p-3 border-r border-slate-100 dark:border-slate-800 cursor-pointer select-none group h-12 transition hover:bg-slate-100/60 dark:hover:bg-slate-800/40 text-center" />
+                    <td className="p-3 bg-brand-50/20 dark:bg-brand-950/5 text-sm h-12 w-32 align-top text-center border-r border-brand-100 dark:border-brand-900/50">
+                      <input type="number" className="w-full bg-transparent border-b border-transparent focus:border-brand-300 text-center text-brand-700 dark:text-brand-300 font-bold focus:outline-none"
+                        value={emp.customGrossUSD !== undefined ? emp.customGrossUSD : ''} placeholder={emp.grossSalaryUSD.toString()}
+                        onChange={(e) => { const val = e.target.value; onUpdateField(emp.id, 'customGrossUSD', val === '' ? undefined : parseFloat(val)); }} />
                     </td>
+                    <td className="p-3 font-mono font-bold bg-amber-50/20 dark:bg-amber-950/5 text-amber-600 dark:text-amber-500 text-center border-r border-amber-100 dark:border-amber-900/50">{emp.taxRate}</td>
+                    <td className="p-3 text-rose-500 bg-amber-50/20 dark:bg-amber-950/5 font-semibold text-center border-r border-amber-100 dark:border-amber-900/50">{formatUSD(emp.taxUSD)}</td>
+                    <td className="p-3 font-semibold text-slate-800 dark:text-slate-200 text-center border-r border-slate-100 dark:border-slate-800">{formatUSD(emp.salaryAfterTaxUSD)}</td>
+                    <EditableCell empId={emp.id} field="sdReturn" value={emp.sdReturn} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-emerald-600 dark:text-emerald-400 font-semibold"
+                      className="p-3 border-r border-slate-100 dark:border-slate-800 text-center cursor-pointer select-none group h-12 transition hover:bg-slate-100/60 dark:hover:bg-slate-800/40" />
+                    <td className="p-3 font-semibold text-emerald-600 dark:text-emerald-400 text-center border-r border-slate-100 dark:border-slate-800">{formatUSD(emp.sdReturn)}</td>
+                    <td className="p-3 bg-emerald-500/10 font-bold text-emerald-600 dark:text-emerald-400 text-sm text-center border-r border-emerald-100 dark:border-emerald-900/50">{formatUSD(emp.netBankUSD)}</td>
+                    <EditableCell empId={emp.id} field="bankAcc" value={emp.bankAcc} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-slate-400" isCurrency={false}
+                      className="p-3 border-r border-slate-100 dark:border-slate-800 cursor-pointer select-none group h-12 transition hover:bg-slate-100/60 dark:hover:bg-slate-800/40 text-center" />
+                    <EditableCell empId={emp.id} field="email" value={emp.email} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-slate-400" isCurrency={false}
+                      className="p-3 border-r border-slate-100 dark:border-slate-800 cursor-pointer select-none group h-12 transition hover:bg-slate-100/60 dark:hover:bg-slate-800/40 text-center" />
+                    <td className="p-3 text-center font-bold text-slate-500 border-r border-slate-100 dark:border-slate-800">PT</td>
+                    <td className="p-3 text-center text-slate-500 border-r border-slate-100 dark:border-slate-800">{emp.status}</td>
+                    <EditableCell empId={emp.id} field="remarks" value={emp.remarks} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-slate-400" isCurrency={false}
+                      className="p-3 cursor-pointer select-none group h-12 transition hover:bg-slate-100/60 dark:hover:bg-slate-800/40 text-center" />
                   </>
-                )}
-
-                <td className={`p-3 font-mono font-bold bg-amber-50/20 dark:bg-amber-950/5 text-amber-600 dark:text-amber-500 ${isPartTime ? 'text-center border-r border-amber-100 dark:border-amber-900/50' : 'text-center'}`}>
-                  {emp.taxRate}
-                </td>
-
-                {!isPartTime && (
-                  <td className="p-3 font-mono text-[11px] text-rose-500 bg-amber-50/20 dark:bg-amber-950/5 font-semibold">
-                    {formatKHR(emp.taxKHR)}
-                  </td>
-                )}
-
-                <td className={`p-3 text-rose-500 bg-amber-50/20 dark:bg-amber-950/5 font-semibold ${isPartTime ? 'text-center border-r border-amber-100 dark:border-amber-900/50' : ''}`}>
-                  {formatUSD(emp.taxUSD)}
-                </td>
-
-                <td className={`p-3 font-semibold text-slate-800 dark:text-slate-200 ${isPartTime ? 'text-center border-r border-slate-100 dark:border-slate-800' : ''}`}>
-                  {formatUSD(emp.salaryAfterTaxUSD)}
-                </td>
-
-                {/* 29. Visa Ded Return / SD Ret(+)/Ded(-) */}
-                <EditableCell
-                  empId={emp.id}
-                  field="sdReturn"
-                  value={emp.sdReturn}
-                  editingCell={editingCell}
-                  editValue={editValue}
-                  onStartEdit={handleStartEdit}
-                  onChangeValue={setEditValue}
-                  onSaveEdit={handleSaveEdit}
-                  onKeyDown={handleKeyDown}
-                  textColor="text-emerald-600 dark:text-emerald-400 font-semibold"
-                  className={isPartTime ? "p-3 border-r border-slate-100 dark:border-slate-800 text-center cursor-pointer select-none group h-12 transition hover:bg-slate-100/60 dark:hover:bg-slate-800/40" : undefined}
-                />
-
-                {/* For Part-Time we show Total (same as sdReturn effectively) */}
-                {isPartTime && (
-                  <td className="p-3 font-semibold text-emerald-600 dark:text-emerald-400 text-center border-r border-slate-100 dark:border-slate-800">
-                    {formatUSD(emp.sdReturn)} 
-                  </td>
-                )}
-
-                {/* 30. Provident Fund */}
-                {!isPartTime && (
-                  <EditableCell
-                    empId={emp.id}
-                    field="provFund"
-                    value={emp.provFund}
-                    editingCell={editingCell}
-                    editValue={editValue}
-                    onStartEdit={handleStartEdit}
-                    onChangeValue={setEditValue}
-                    onSaveEdit={handleSaveEdit}
-                    onKeyDown={handleKeyDown}
-                    textColor="text-rose-600 dark:text-rose-400 font-semibold"
-                  />
-                )}
-
-                {/* 31. Net Bank output */}
-                <td className={`p-3 bg-emerald-500/10 font-bold text-emerald-600 dark:text-emerald-400 text-sm ${isPartTime ? 'text-center border-r border-emerald-100 dark:border-emerald-900/50' : ''}`}>
-                  {formatUSD(emp.netBankUSD)}
-                </td>
-
-                <EditableCell
-                  empId={emp.id}
-                  field="bankAcc"
-                  value={emp.bankAcc}
-                  editingCell={editingCell}
-                  editValue={editValue}
-                  onStartEdit={handleStartEdit}
-                  onChangeValue={setEditValue}
-                  onSaveEdit={handleSaveEdit}
-                  onKeyDown={handleKeyDown}
-                  textColor="text-slate-400"
-                  isCurrency={false}
-                  className={isPartTime ? "p-3 border-r border-slate-100 dark:border-slate-800 cursor-pointer select-none group h-12 transition hover:bg-slate-100/60 dark:hover:bg-slate-800/40 text-center" : undefined}
-                />
-                <EditableCell
-                  empId={emp.id}
-                  field="email"
-                  value={emp.email}
-                  editingCell={editingCell}
-                  editValue={editValue}
-                  onStartEdit={handleStartEdit}
-                  onChangeValue={setEditValue}
-                  onSaveEdit={handleSaveEdit}
-                  onKeyDown={handleKeyDown}
-                  textColor="text-slate-400"
-                  isCurrency={false}
-                  className={isPartTime ? "p-3 border-r border-slate-100 dark:border-slate-800 cursor-pointer select-none group h-12 transition hover:bg-slate-100/60 dark:hover:bg-slate-800/40 text-center" : undefined}
-                />
-
-                {isPartTime && (
+                ) : (
                   <>
-                    <td className="p-3 text-center font-bold text-slate-500 border-r border-slate-100 dark:border-slate-800">
-                      PT
+                    <EditableCell empId={emp.id} field="basic" value={emp.basic} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-slate-800 dark:text-slate-200 font-semibold bg-blue-50/20 dark:bg-blue-950/5" readOnly={true} />
+                    <EditableCell empId={emp.id} field="prePayPct" value={emp.prepayAmount} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-slate-500 font-mono" isCurrency={false} />
+                    <EditableCell empId={emp.id} field="other" value={emp.other} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-indigo-600 dark:text-indigo-400 font-semibold" isCurrency={false} />
+                    <EditableCell empId={emp.id} field="maternity" value={emp.maternity} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-emerald-600 dark:text-emerald-400 font-semibold" />
+                    <EditableCell empId={emp.id} field="hourlyRate" value={emp.hourlyRate} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-blue-600 dark:text-blue-400 font-semibold" isCurrency={false} />
+                    <EditableCell empId={emp.id} field="scheduleHours" value={emp.scheduleHours ?? 0} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-blue-600 dark:text-blue-400 font-semibold" isCurrency={false} />
+                    <td className="p-3 font-bold text-blue-600 dark:text-blue-400 font-mono bg-blue-50/20 dark:bg-blue-950/5">${(emp.hourlyRate * (emp.scheduleHours ?? 0)).toFixed(2)}</td>
+                    <EditableCell empId={emp.id} field="caAdd" value={emp.caAdd} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-emerald-600 dark:text-emerald-400 font-semibold" />
+                    <EditableCell empId={emp.id} field="nssf" value={emp.nssf} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-rose-600 dark:text-rose-400 font-semibold" />
+                    <EditableCell empId={emp.id} field="afterSchool" value={emp.afterSchool} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-indigo-600 dark:text-indigo-400 font-semibold" isCurrency={false} />
+                    <EditableCell empId={emp.id} field="seniority" value={emp.seniority} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-slate-800 dark:text-slate-200" />
+                    <td className="p-3 bg-brand-50/20 dark:bg-brand-950/5 text-sm h-12 w-32 align-top">
+                      <input type="number" className="w-full bg-white/50 dark:bg-slate-800/50 border border-brand-200 dark:border-brand-800 rounded px-2 py-1 text-brand-700 dark:text-brand-300 font-bold focus:ring-2 focus:ring-brand-500 outline-none"
+                        value={emp.customGrossUSD !== undefined ? emp.customGrossUSD : ''} placeholder={emp.grossSalaryUSD.toString()}
+                        onChange={(e) => { const val = e.target.value; onUpdateField(emp.id, 'customGrossUSD', val === '' ? undefined : parseFloat(val)); }} />
                     </td>
-                    <td className="p-3 text-center text-slate-500 border-r border-slate-100 dark:border-slate-800">
-                      {emp.status}
+                    <td className="p-3 bg-slate-50/50 dark:bg-slate-900/50 text-[11px] h-12 w-32 align-top">
+                      <input type="number" className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-300 dark:border-slate-700 rounded px-2 py-1 text-slate-700 dark:text-slate-300 font-mono font-semibold focus:ring-2 focus:ring-brand-500 outline-none"
+                        value={emp.customSalaryPaidKHR !== undefined ? emp.customSalaryPaidKHR : ''} placeholder={emp.salaryPaidKHR.toString()}
+                        onChange={(e) => { const val = e.target.value; onUpdateField(emp.id, 'customSalaryPaidKHR', val === '' ? undefined : parseFloat(val)); }} />
                     </td>
+                    <EditableCell empId={emp.id} field="spouse" value={emp.spouse} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown} />
+                    <EditableCell empId={emp.id} field="kids" value={emp.kids} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-slate-500 font-semibold" isCurrency={false} />
+                    <EditableCell empId={emp.id} field="allowance" value={emp.allowance} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-slate-500" />
+                    <td className="p-3 font-mono text-[11px] bg-amber-50/20 dark:bg-amber-950/5 text-slate-700 dark:text-slate-300">{formatKHR(emp.taxBaseKHR)}</td>
+                    <td className="p-3 font-mono font-bold bg-amber-50/20 dark:bg-amber-950/5 text-amber-600 dark:text-amber-500 text-center">{emp.taxRate}</td>
+                    <td className="p-3 font-mono text-[11px] text-rose-500 bg-amber-50/20 dark:bg-amber-950/5 font-semibold">{formatKHR(emp.taxKHR)}</td>
+                    <td className="p-3 text-rose-500 bg-amber-50/20 dark:bg-amber-950/5 font-semibold">{formatUSD(emp.taxUSD)}</td>
+                    <td className="p-3 font-semibold text-slate-800 dark:text-slate-200">{formatUSD(emp.salaryAfterTaxUSD)}</td>
+                    <EditableCell empId={emp.id} field="adjustError" value={emp.adjustError} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-orange-600 dark:text-orange-400 font-semibold" />
+                    <EditableCell empId={emp.id} field="workBook" value={emp.workBook} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-rose-600 dark:text-rose-400 font-semibold" isCurrency={false} />
+                    <td className="p-3 bg-emerald-500/10 font-bold text-emerald-600 dark:text-emerald-400 text-sm">{formatUSD(emp.netBankUSD)}</td>
+                    <EditableCell empId={emp.id} field="bankAcc" value={emp.bankAcc} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-slate-400" isCurrency={false} />
+                    <EditableCell empId={emp.id} field="email" value={emp.email} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-slate-400" isCurrency={false} />
+                    <EditableCell empId={emp.id} field="remarks" value={emp.remarks} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-slate-400" isCurrency={false} />
                   </>
-                )}
-
-                <EditableCell
-                  empId={emp.id}
-                  field="remarks"
-                  value={emp.remarks}
-                  editingCell={editingCell}
-                  editValue={editValue}
-                  onStartEdit={handleStartEdit}
-                  onChangeValue={setEditValue}
-                  onSaveEdit={handleSaveEdit}
-                  onKeyDown={handleKeyDown}
-                  textColor="text-slate-400"
-                  isCurrency={false}
-                  className={isPartTime ? "p-3 cursor-pointer select-none group h-12 transition hover:bg-slate-100/60 dark:hover:bg-slate-800/40 text-center" : undefined}
-                />
-
-                {!isPartTime && (
-                  <td className="p-3 font-medium text-slate-600 dark:text-slate-400">
-                    {formatUSD(emp.grossForSummary)}
-                  </td>
                 )}
               </tr>
             ))}

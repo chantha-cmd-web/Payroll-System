@@ -56,6 +56,9 @@ export default function EmployeeMaster({
     absenceHours: 0,
     substituteHours: 0,
     afterSchool: 0,
+    other: 0,
+    adjustError: 0,
+    workBook: 0,
     prePayPct: 100,
     absence: 0,
     maternity: 0,
@@ -194,7 +197,10 @@ export default function EmployeeMaster({
                else if (norm.includes('absence') && (norm.includes('hr') || norm.includes('hour'))) columnIndexMap[104] = index;
                else if (norm.includes('substitute') || norm.includes('subhrs') || norm.includes('subhr')) columnIndexMap[105] = index;
                else if (norm.includes('afterschool') || norm === 'after' || (norm.includes('hrm') && norm.includes('after')) || norm.includes('schoolprogram') || (norm.includes('after') && norm.includes('school'))) columnIndexMap[106] = index;
-               else if (norm.includes('type') || norm.includes('employmenttype')) columnIndexMap[99] = index;
+               else if (norm === 'other' || norm.includes('otheradj')) columnIndexMap[107] = index;
+               else if (norm.includes('adjusterror') || (norm.includes('adjust') && norm.includes('tos')) || (norm.includes('error') && norm.includes('nssf'))) columnIndexMap[108] = index;
+               else if (norm.includes('workbook') || (norm.includes('work') && norm.includes('book'))) columnIndexMap[109] = index;
+                else if (norm.includes('type') || norm.includes('employmenttype')) columnIndexMap[99] = index;
             }
          });
 
@@ -252,7 +258,10 @@ export default function EmployeeMaster({
                absenceHours: parseNumber(getValue(104, 0), 0),
                substituteHours: parseNumber(getValue(105, 0), 0),
                afterSchool: parseNumber(getValue(106, 0), 0),
-               prePayPct: parseNumber(getValue(12, 100), 100),
+               other: parseNumber(getValue(107, 0), 0),
+               adjustError: parseNumber(getValue(108, 0), 0),
+               workBook: parseNumber(getValue(109, 0), 0),
+                prePayPct: parseNumber(getValue(12, 100), 100),
                absence: parseNumber(getValue(13, 0), 0),
                maternity: parseNumber(getValue(14, 0), 0),
                ot: parseNumber(getValue(15, 0), 0),
@@ -321,10 +330,9 @@ export default function EmployeeMaster({
     } else if (activeTab === 'Semi-Full-Time') {
       headers = [
         ...commonHeaders,
-        'Basic Salary', 'Hourly Rate', 'Schedule Hours', 'Absence Hours', 'Substitute Hours', 'After School Hours',
-        'Prepay %', 'Absence(-)', 'Maternity(+)', 'OT(+)',
-        'Cash Advance(+)', 'Cash Advance(-)', 'NSSF(-)', 'Seniority',
-        'Spouse', 'Kids', 'Allowance', 'SD Return', 'Prov Fund',
+        'Basic Salary', 'Prepay %', 'Other', 'Maternity(+)', 'Rate (Hourly)', 'Schedule Hours',
+        'Cash Advance(+)', 'NSSF(-)', 'After School Hours', 'Seniority',
+        'Spouse', 'Kids', 'Allowance', 'Adjust Error TOS/NSSF', 'Work Book (-)',
         'Bank Acc', 'Email', 'Remarks', 'Status', ...typeSuffix
       ];
     } else {
@@ -669,29 +677,42 @@ export default function EmployeeMaster({
                         className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-800 rounded-lg text-xs focus:outline-none focus:border-blue-500" />
                     </div>
                     {formData.employmentType === 'Semi-Full-Time' && (
-                      <div className="grid grid-cols-3 gap-3 col-span-2">
-                        <div>
-                          <label className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1">
-                            Hourly Rate (USD)
-                          </label>
-                          <input type="number" value={formData.hourlyRate} onChange={(e) => setFormData({ ...formData, hourlyRate: Number(e.target.value) })}
-                            className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-800 rounded-lg text-xs focus:outline-none focus:border-blue-500" />
+                      <>
+                        <div className="grid grid-cols-3 gap-3 col-span-2">
+                          <div>
+                            <label className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Rate (Hourly)</label>
+                            <input type="number" value={formData.hourlyRate} onChange={(e) => setFormData({ ...formData, hourlyRate: Number(e.target.value) })}
+                              className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-800 rounded-lg text-xs focus:outline-none focus:border-blue-500" />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Hour (Schedule)</label>
+                            <input type="number" value={formData.scheduleHours ?? 0} onChange={(e) => setFormData({ ...formData, scheduleHours: Number(e.target.value) })}
+                              className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-800 rounded-lg text-xs focus:outline-none focus:border-blue-500" />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1">After School Hrs</label>
+                            <input type="number" value={formData.afterSchool} onChange={(e) => setFormData({ ...formData, afterSchool: Number(e.target.value) })}
+                              className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-800 rounded-lg text-xs focus:outline-none focus:border-blue-500" />
+                          </div>
                         </div>
-                        <div>
-                          <label className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1">
-                            Substitute Hours
-                          </label>
-                          <input type="number" value={formData.substituteHours} onChange={(e) => setFormData({ ...formData, substituteHours: Number(e.target.value) })}
-                            className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-800 rounded-lg text-xs focus:outline-none focus:border-blue-500" />
+                        <div className="grid grid-cols-3 gap-3 col-span-2">
+                          <div>
+                            <label className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Other (+)</label>
+                            <input type="number" value={formData.other} onChange={(e) => setFormData({ ...formData, other: Number(e.target.value) })}
+                              className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-800 rounded-lg text-xs focus:outline-none focus:border-blue-500" />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Adjust Error TOS/NSSF</label>
+                            <input type="number" value={formData.adjustError} onChange={(e) => setFormData({ ...formData, adjustError: Number(e.target.value) })}
+                              className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-800 rounded-lg text-xs focus:outline-none focus:border-blue-500" />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Work Book (-)</label>
+                            <input type="number" value={formData.workBook} onChange={(e) => setFormData({ ...formData, workBook: Number(e.target.value) })}
+                              className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-800 rounded-lg text-xs focus:outline-none focus:border-blue-500" />
+                          </div>
                         </div>
-                        <div>
-                          <label className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1">
-                            After School Hrs
-                          </label>
-                          <input type="number" value={formData.afterSchool} onChange={(e) => setFormData({ ...formData, afterSchool: Number(e.target.value) })}
-                            className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-800 rounded-lg text-xs focus:outline-none focus:border-blue-500" />
-                        </div>
-                      </div>
+                      </>
                     )}
                   </div>
                 )}
@@ -715,7 +736,7 @@ export default function EmployeeMaster({
                   </div>
                 )}
 
-                {(formData.employmentType === 'Semi-Full-Time' || formData.employmentType === 'Part-Time') && (
+                {formData.employmentType === 'Part-Time' && (
                   <div>
                     <label className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1">
                       Absence Hours

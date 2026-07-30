@@ -31,6 +31,9 @@ export interface Employee {
   absenceHours: number; // For semi-full-time and part-time
   substituteHours: number; // For semi-full-time
   afterSchool: number; // HRM/After school program (Semi-Full-Time)
+  other: number; // Other adjustment (Semi-Full-Time)
+  adjustError: number; // Adjust error TOS/NSSF (Semi-Full-Time)
+  workBook: number; // Work Book deduction (Semi-Full-Time)
   prePayPct: number; // %
   absence: number; // USD (Calculated or fixed)
   maternity: number; // USD

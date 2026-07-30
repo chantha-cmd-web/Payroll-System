@@ -481,14 +481,14 @@ export default function App() {
       let calculatedAbsence = emp.absence;
       let calculatedOT = emp.ot;
       let calculatedAfterSchool = 0;
+      let calculatedAmount = 0;
 
       if (emp.employmentType === 'Part-Time') {
         basePay = Number((emp.hourlyRate * emp.presentHours).toFixed(2));
         calculatedAbsence = Number((emp.absenceHours * emp.hourlyRate).toFixed(2));
       } else if (emp.employmentType === 'Semi-Full-Time') {
         basePay = emp.basic;
-        calculatedAbsence = Number((emp.absenceHours * emp.hourlyRate).toFixed(2));
-        calculatedOT = Number((emp.substituteHours * emp.hourlyRate).toFixed(2));
+        calculatedAmount = Number(((emp.scheduleHours ?? 0) * emp.hourlyRate).toFixed(2));
         calculatedAfterSchool = Number((emp.afterSchool * emp.hourlyRate).toFixed(2));
       }
 
@@ -509,7 +509,9 @@ export default function App() {
       
       // Sum from Prepay until Seniority / GEP (columns 12 to 19)
       // Using exact column values to match Excel SUM(S72:Z72), applying signs from headers
-      const rawGross = prepayAmount - calculatedAbsence + emp.maternity + calculatedOT + emp.caAdd - emp.caDed - emp.nssf + emp.seniority + calculatedAfterSchool;
+      const rawGross = emp.employmentType === 'Semi-Full-Time'
+        ? prepayAmount + emp.other + emp.maternity + calculatedAmount + emp.caAdd - emp.nssf + calculatedAfterSchool + emp.seniority
+        : prepayAmount - calculatedAbsence + emp.maternity + calculatedOT + emp.caAdd - emp.caDed - emp.nssf + emp.seniority + calculatedAfterSchool;
       const computedGross = Math.round(rawGross * 100) / 100;
       const grossSalaryUSD = emp.customGrossUSD !== undefined ? emp.customGrossUSD : computedGross;
       
@@ -562,7 +564,7 @@ export default function App() {
 
       // 6. Net Salaries
       const salaryAfterTaxUSD = grossSalaryUSD + emp.allowance - taxUSD;
-      const netBankUSD = salaryAfterTaxUSD + emp.sdReturn - emp.provFund;
+      const netBankUSD = salaryAfterTaxUSD + emp.sdReturn - emp.provFund + emp.adjustError - emp.workBook;
       const grossForSummary = grossSalaryUSD + emp.allowance + emp.sdReturn;
 
       return {
