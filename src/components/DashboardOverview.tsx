@@ -7,7 +7,7 @@ import React, { useState, useMemo } from 'react';
 import { 
   Users, DollarSign, Scale, Database, RefreshCw, EyeOff, LayoutGrid, CheckCircle2,
   Trash2, Plus, Sliders, Wifi, WifiOff, ShieldCheck, Download, Calendar, Activity, 
-  Settings, UserCheck, AlertCircle, FileSpreadsheet
+  Settings, UserCheck, AlertCircle, FileSpreadsheet, ShieldAlert
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PayrollResult, WidgetConfig } from '../types';
@@ -144,6 +144,10 @@ export default function DashboardOverview({
         </div>
 
         <div className="flex items-center gap-2.5">
+          <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-amber-50 dark:bg-amber-950/20 border border-amber-200/50 dark:border-amber-900/30 rounded-lg text-[10px] font-bold text-amber-600 dark:text-amber-400">
+            <ShieldCheck className="w-3 h-3" />
+            GDT Sandbox Mode
+          </span>
           <button
             onClick={() => setIsCustomizing(!isCustomizing)}
             className="flex items-center gap-2 px-3.5 py-2 text-xs font-semibold bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 rounded-xl transition"
@@ -385,22 +389,27 @@ export default function DashboardOverview({
 
         {/* Campus Expenses Breakdowns Graph */}
         {activeWidgets.some(w => w.id === 'campus-expenses') && (
-          <div className="md:col-span-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-850 shadow-sm rounded-2xl p-5">
-            <h4 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-4">
-              Expenses by Campus (USD)
-            </h4>
+          <div className="md:col-span-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-850 shadow-sm rounded-2xl p-5">
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                Expenses by Campus (USD)
+              </h4>
+              <span className="text-[10px] font-mono text-slate-400 font-semibold">
+                {campusData.length} campus{campusData.length !== 1 ? 'es' : ''}
+              </span>
+            </div>
 
-            <div className="h-44 flex flex-col justify-between gap-3 pt-2">
+            <div className="space-y-4">
               {campusData.map(({ name, value }) => {
                 const total = totals.grossTotal || 1;
                 const pct = (value / total) * 100;
                 return (
-                  <div key={name} className="space-y-1">
+                  <div key={name} className="space-y-1.5">
                     <div className="flex justify-between items-center text-xs">
                       <span className="font-semibold text-slate-700 dark:text-slate-300">{name} Campus</span>
                       <span className="font-mono text-slate-500">${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                     </div>
-                    <div className="w-full bg-slate-100 dark:bg-slate-950 h-2.5 rounded-full overflow-hidden">
+                    <div className="w-full bg-slate-100 dark:bg-slate-950 h-3 rounded-full overflow-hidden">
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${pct}%` }}
@@ -408,9 +417,18 @@ export default function DashboardOverview({
                         className="bg-emerald-500 h-full rounded-full"
                       />
                     </div>
+                    <div className="flex justify-between text-[10px] text-slate-400 font-mono">
+                      <span>{pct.toFixed(1)}% of total</span>
+                      <span>{processedData.filter(e => e.campus === name).length} staff</span>
+                    </div>
                   </div>
                 );
               })}
+              {campusData.length === 0 && (
+                <div className="text-center py-8 text-slate-400 text-xs">
+                  No campus data available. Import employee data to see expenses.
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -460,65 +478,58 @@ export default function DashboardOverview({
           </div>
         )}
 
-        {/* Security & MFA Audit */}
-        {activeWidgets.some(w => w.id === 'security-widget') && (
-          <div className="md:col-span-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-850 shadow-sm rounded-2xl p-5 flex flex-col justify-between min-h-[170px]">
-            <div>
-              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                Security Compliance Audit
-              </span>
-              
-              <div className="grid grid-cols-2 gap-3 mt-3">
-                <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/50 dark:border-slate-800/60">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                    MFA Security
-                  </span>
-                  <div className="text-xs font-bold mt-1 text-slate-700 dark:text-slate-300 flex items-center gap-1">
-                    <span className={`w-2 h-2 rounded-full ${mfaEnabled ? 'bg-emerald-500' : 'bg-amber-500'}`} />
-                    {mfaEnabled ? 'Active' : 'Inactive'}
-                  </div>
-                </div>
+      </div>
 
-                <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/50 dark:border-slate-800/60">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                    Biometrics
-                  </span>
-                  <div className="text-xs font-bold mt-1 text-slate-700 dark:text-slate-300 flex items-center gap-1">
-                    <span className={`w-2 h-2 rounded-full ${biometricsEnabled ? 'bg-emerald-500' : 'bg-amber-500'}`} />
-                    {biometricsEnabled ? 'Enrolled' : 'Not Set'}
-                  </div>
+      {/* Security & Compliance / GDT Footer */}
+      <details className="group">
+        <summary className="flex items-center gap-2 cursor-pointer p-3 bg-slate-50 dark:bg-slate-950/40 border border-slate-200 dark:border-slate-850/60 rounded-2xl text-[11px] font-semibold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition">
+          <ShieldAlert className="w-4 h-4 text-amber-500" />
+          Security Compliance &amp; GDT Cambodian Taxation Sandbox Mode
+          <svg className="w-3 h-3 ml-auto group-open:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+        </summary>
+        <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-850 rounded-2xl">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Security Compliance Audit</span>
+            <div className="grid grid-cols-2 gap-3 mt-3">
+              <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/50 dark:border-slate-800/60">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">MFA Security</span>
+                <div className="text-xs font-bold mt-1 text-slate-700 dark:text-slate-300 flex items-center gap-1">
+                  <span className={`w-2 h-2 rounded-full ${mfaEnabled ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                  {mfaEnabled ? 'Active' : 'Inactive'}
+                </div>
+              </div>
+              <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200/50 dark:border-slate-800/60">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Biometrics</span>
+                <div className="text-xs font-bold mt-1 text-slate-700 dark:text-slate-300 flex items-center gap-1">
+                  <span className={`w-2 h-2 rounded-full ${biometricsEnabled ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                  {biometricsEnabled ? 'Enrolled' : 'Not Set'}
                 </div>
               </div>
             </div>
-
-            <p className="text-[11px] text-slate-400 leading-relaxed mt-2">
-              Encryption standards verified. All sensitive credentials are hashed locally via SHA256 and never sent to cloud plain.
+            <p className="text-[11px] text-slate-400 leading-relaxed mt-3">
+              Encryption standards verified. All sensitive credentials are hashed locally via SHA256.
             </p>
           </div>
-        )}
-
-      </div>
-
-      {/* Quick Access Actions */}
-      <div className="p-4 bg-slate-50 dark:bg-slate-950/40 border border-slate-200 dark:border-slate-850/60 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-brand-500/10 text-brand-500 flex items-center justify-center">
-            <UserCheck className="w-5 h-5" />
-          </div>
-          <div>
-            <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">GDT Cambodian Taxation Sandbox Mode</h4>
-            <p className="text-[11px] text-slate-400">Add or edit records in Employee Master to calculate tax liability instantly.</p>
+          <div className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-850 rounded-2xl flex flex-col justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-brand-500/10 text-brand-500 flex items-center justify-center">
+                <UserCheck className="w-4 h-4" />
+              </div>
+              <div>
+                <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">GDT Taxation Sandbox</h4>
+                <p className="text-[10px] text-slate-400">Add records in Employee Master to calculate tax liability instantly.</p>
+              </div>
+            </div>
+            <button
+              onClick={() => onNavigateToMenu('payroll')}
+              className="mt-3 w-full py-2 bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-semibold rounded-xl transition flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/10"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5" />
+              Open Full-time Staff Run
+            </button>
           </div>
         </div>
-
-        <button
-          onClick={() => onNavigateToMenu('payroll')}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-xl transition flex items-center gap-1.5 shadow-md shadow-blue-500/10"
-        >
-          <FileSpreadsheet className="w-4 h-4" />
-          Open Full-time Staff Run
-        </button>
-      </div>
+      </details>
 
     </div>
   );
