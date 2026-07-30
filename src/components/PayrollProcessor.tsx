@@ -164,12 +164,13 @@ export default function PayrollProcessor({
     }
   };
 
-  const handleSaveEdit = (id: number, field: string) => {
-    let finalValue: string | number | boolean = editValue;
+  const handleSaveEdit = (id: number, field: string, overrideValue?: string) => {
+    const value = overrideValue !== undefined ? overrideValue : editValue;
+    let finalValue: string | number | boolean = value;
     
     // Check if it's supposed to be a number or boolean based on the field
     if (['spouse'].includes(field)) {
-      finalValue = editValue === 'true';
+      finalValue = value === 'true';
     } else if (['staffId', 'name', 'nat', 'pos', 'dept', 'campus', 'doj', 'empDate', 'bankAcc', 'email', 'remarks'].includes(field)) {
       finalValue = editValue;
     } else if (['customGrossUSD', 'customSalaryPaidKHR'].includes(field) && editValue === '') {
@@ -881,8 +882,9 @@ function EditableCell({
             disabled={readOnly}
             onChange={(e) => {
               if (readOnly) return;
-              onChangeValue(e.target.checked ? 'true' : 'false');
-              onSaveEdit(empId, field);
+              const newVal = e.target.checked ? 'true' : 'false';
+              onChangeValue(newVal);
+              onSaveEdit(empId, field, newVal);
             }}
           />
         </label>

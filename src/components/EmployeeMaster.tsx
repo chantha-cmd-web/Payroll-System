@@ -271,7 +271,7 @@ export default function EmployeeMaster({
                seniority: parseNumber(getValue(19, 0), 0),
                customGrossUSD: getValue(20, '') !== '' ? parseNumber(getValue(20)) : undefined,
                customSalaryPaidKHR: getValue(21, '') !== '' ? parseNumber(getValue(21)) : undefined,
-               spouse: String(getValue(22, '')).toLowerCase() === 'yes',
+                spouse: (() => { const v = getValue(22, ''); return typeof v === 'number' ? v === 1 : ['yes','true','y'].includes(String(v).toLowerCase().trim()); })(),
                kids: parseNumber(getValue(23, 0), 0),
                allowance: parseNumber(getValue(24, 0), 0),
                sdReturn: parseNumber(getValue(30, 0), 0),
