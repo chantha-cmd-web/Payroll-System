@@ -467,8 +467,6 @@ export default function PayrollProcessor({
                 <th className="p-3.5 font-bold">Employment Date</th>
                 <th className="p-3.5 font-bold bg-blue-50/40 dark:bg-blue-950/10">Basic Salary</th>
                 <th className="p-3.5 font-bold">Pre. Pay / Percentage</th>
-                <th className="p-3.5 font-bold text-indigo-500">Other</th>
-                <th className="p-3.5 font-bold text-emerald-500">Maternity</th>
                 <th className="p-3.5 font-bold text-blue-500">Rate</th>
                 <th className="p-3.5 font-bold text-blue-500">Hour</th>
                 <th className="p-3.5 font-bold text-blue-500">Amount</th>
@@ -743,10 +741,6 @@ export default function PayrollProcessor({
                       textColor="text-slate-800 dark:text-slate-200 font-semibold bg-blue-50/20 dark:bg-blue-950/5" readOnly={true} />
                     <EditableCell empId={emp.id} field="prePayPct" value={emp.prepayAmount} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
                       textColor="text-slate-500 font-mono" isCurrency={false} />
-                    <EditableCell empId={emp.id} field="other" value={emp.other} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
-                      textColor="text-indigo-600 dark:text-indigo-400 font-semibold" isCurrency={false} />
-                    <EditableCell empId={emp.id} field="maternity" value={emp.maternity} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
-                      textColor="text-emerald-600 dark:text-emerald-400 font-semibold" />
                     <EditableCell empId={emp.id} field="hourlyRate" value={emp.hourlyRate} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
                       textColor="text-blue-600 dark:text-blue-400 font-semibold" isCurrency={false} />
                     <EditableCell empId={emp.id} field="scheduleHours" value={emp.scheduleHours ?? 0} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
