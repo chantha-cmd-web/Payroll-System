@@ -847,7 +847,7 @@ interface EditableCellProps {
   editValue: string;
   onStartEdit: (id: number, field: string, val: string | number | boolean) => void;
   onChangeValue: (val: string) => void;
-  onSaveEdit: (id: number, field: string) => void;
+  onSaveEdit: (id: number, field: string, overrideValue?: string) => void;
   onKeyDown: (e: React.KeyboardEvent, id: number, field: string) => void;
   textColor?: string;
   isCurrency?: boolean;

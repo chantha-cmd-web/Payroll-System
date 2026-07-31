@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Employee, PayrollResult, BackupHistory, SystemNotification, OfflineQueueItem, AuditLog } from './types';
+import { computePayroll } from './payrollEngine';
 
 // Import newly created modular sub-components
 import LoginScreen from './components/LoginScreen';
@@ -60,6 +61,8 @@ const INITIAL_EMPLOYEES: Employee[] = [
       other: 0,
       adjustError: 0,
       workBook: 0,
+      afterSchool: 0,
+      scheduleHours: 0,
       group: '',
       savingAmt: 0
     },
@@ -140,6 +143,8 @@ const INITIAL_EMPLOYEES: Employee[] = [
       other: 0,
       adjustError: 0,
       workBook: 0,
+      afterSchool: 0,
+      scheduleHours: 0,
       group: '',
       savingAmt: 0
     }
@@ -491,118 +496,7 @@ export default function App() {
 
   // --- COMPLIANT CAMBODIAN TAX ENGINE ---
   const processedData: PayrollResult[] = useMemo(() => {
-    return employees.map(emp => {
-      // 1. Gross Salary (GDT compliant calculation)
-      
-      let basePay = emp.basic;
-      let calculatedAbsence = emp.absence;
-      let calculatedOT = emp.ot;
-      let calculatedAfterSchool = 0;
-      let calculatedAmount = 0;
-
-      if (emp.employmentType === 'Part-Time') {
-        basePay = Number((emp.hourlyRate * emp.presentHours).toFixed(2));
-        calculatedAbsence = Number((emp.absenceHours * emp.hourlyRate).toFixed(2));
-      } else if (emp.employmentType === 'Semi-Full-Time') {
-        basePay = emp.basic;
-        calculatedAmount = Number(((emp.scheduleHours ?? 0) * emp.hourlyRate).toFixed(2));
-        calculatedAfterSchool = Number((emp.afterSchool * emp.hourlyRate).toFixed(2));
-      }
-
-      // 12. Pre. Pay / Percentage auto calculation based on status
-      let prepayAmount = 0;
-      if (emp.status === 'TT') {
-        prepayAmount = basePay / 2;
-      } else if (emp.status === 'UN' || emp.status === 'ML' || emp.status === 'SH') {
-        prepayAmount = 0;
-      } else if (emp.status === 'T' || emp.status === 'W') {
-        prepayAmount = basePay;
-      } else {
-        // Fallback or "N", "SP" manual entry logic
-        // If user enters a value > 100, treat it as a direct monetary amount. Otherwise, treat as percentage of basic.
-        prepayAmount = emp.prePayPct > 100 ? emp.prePayPct : (basePay * (emp.prePayPct / 100));
-      }
-      prepayAmount = Math.round(prepayAmount * 100) / 100;
-      
-      // Sum from Prepay until Seniority / GEP (columns 12 to 19)
-      // Using exact column values to match Excel SUM(S72:Z72), applying signs from headers
-      const rawGross = emp.employmentType === 'Semi-Full-Time'
-        ? prepayAmount + emp.other + emp.maternity + calculatedAmount + emp.caAdd - emp.nssf + calculatedAfterSchool + emp.seniority
-        : prepayAmount - calculatedAbsence + emp.maternity + calculatedOT + emp.caAdd - emp.caDed - emp.nssf + emp.seniority;
-      const computedGross = Math.round(rawGross * 100) / 100;
-      const grossSalaryUSD = emp.customGrossUSD !== undefined ? emp.customGrossUSD : computedGross;
-      
-      
-      
-      // 2. KHR salary conversion for GDT schedules
-      const computedSalaryPaidKHR = grossSalaryUSD * exchangeRate;
-      const salaryPaidKHR = emp.customSalaryPaidKHR !== undefined ? emp.customSalaryPaidKHR : computedSalaryPaidKHR;
-
-      // 3. Tax relief: Allowance = (Spouse + Kids) × 150,000 KHR
-      // 4. Tax Base = IF(SalaryPaidKHR=0, 0, SalaryPaidKHR - Allowance)
-      const allowanceKHR = ((/^(yes|true|y|1)$/i.test(emp.spouse) ? 1 : Number(emp.spouse) > 0 ? 1 : 0) + emp.kids) * 150000;
-      const taxBaseKHR = salaryPaidKHR === 0 ? 0 : Math.max(0, salaryPaidKHR - allowanceKHR);
-
-      // 5. Official progressive tax schedules and rate calculations
-      let taxKHR = 0;
-      let taxRate = '0%';
-      if (emp.nat !== 'Khmer') {
-        // Expat non-residents are taxed at flat 20% flat rate on all Cambodian earned income
-        taxKHR = taxBaseKHR * 0.20;
-        taxRate = '20% Flat';
-      } else {
-        // Progressive Tiers for Khmer Nationals
-        if (taxBaseKHR <= 1500000) {
-          taxKHR = 0;
-          taxRate = '0%';
-        } else if (taxBaseKHR <= 2000000) {
-          taxKHR = (taxBaseKHR * 0.05) - 75000;
-          taxRate = '5%';
-        } else if (taxBaseKHR <= 8500000) {
-          taxKHR = (taxBaseKHR * 0.10) - 175000;
-          taxRate = '10%';
-        } else if (taxBaseKHR <= 12500000) {
-          taxKHR = (taxBaseKHR * 0.15) - 600000;
-          taxRate = '15%';
-        } else {
-          taxKHR = (taxBaseKHR * 0.20) - 1225000;
-          taxRate = '20%';
-        }
-      }
-
-      taxKHR = Math.max(0, taxKHR);
-      const taxUSD = taxKHR / exchangeRate;
-
-      // 6. Net Salaries
-      const salaryAfterTaxUSD = grossSalaryUSD - taxUSD;
-      const netBankUSD = emp.employmentType === 'Full-Time'
-        ? salaryAfterTaxUSD + emp.other + emp.sdReturn - emp.seniority - emp.caAdd
-        : emp.employmentType === 'Semi-Full-Time'
-        ? salaryAfterTaxUSD - emp.seniority - emp.caAdd + emp.adjustError - emp.workBook
-        : salaryAfterTaxUSD + emp.sdReturn;
-      const grossForSummary = emp.employmentType === 'Full-Time'
-        ? grossSalaryUSD + emp.other + emp.sdReturn
-        : emp.employmentType === 'Semi-Full-Time'
-        ? grossSalaryUSD
-        : grossSalaryUSD + emp.sdReturn;
-
-      return {
-        ...emp,
-        basic: basePay,
-        absence: calculatedAbsence,
-        ot: calculatedOT,
-        prepayAmount,
-        grossSalaryUSD,
-        salaryPaidKHR,
-        taxBaseKHR,
-        taxRate,
-        taxKHR,
-        taxUSD,
-        salaryAfterTaxUSD,
-        netBankUSD,
-        grossForSummary
-      };
-    });
+    return employees.map(emp => computePayroll(emp, exchangeRate));
   }, [employees, exchangeRate]);
 
   // Handle Employee Database modifications with Online Sync simulation
