@@ -77,7 +77,10 @@ export function computePayroll(emp: Employee, exchangeRate: number): PayrollResu
   if (emp.employmentType === 'Part-Time') {
     basePay = roundUSD(emp.hourlyRate * emp.presentHours);
     calculatedAbsence = roundUSD(emp.absenceHours * emp.hourlyRate);
-  } else if (emp.employmentType === 'Semi-Full-Time') {
+  } else {
+    // Full-Time and Semi-Full-Time share the same Gross Salary inputs:
+    //   Amount (USD) = Schedule Hours × Rate
+    //   HRM / After School Program (USD) = After School Hours × Rate
     basePay = emp.basic;
     calculatedAmount = roundUSD((emp.scheduleHours ?? 0) * emp.hourlyRate);
     calculatedAfterSchool = roundUSD(emp.afterSchool * emp.hourlyRate);
@@ -85,13 +88,16 @@ export function computePayroll(emp: Employee, exchangeRate: number): PayrollResu
 
   const prepayAmount = computePrepayAmount(emp, basePay);
 
-  // Full-Time Gross = Pre.Pay − Absence + Maternity + OT + CashAdvance(+) − CashAdvance(−)
+  // Approved GDT payroll rule (Full-Time & Semi-Full-Time):
+  //   Gross Salary = Pre. Pay + Amount + HRM / After School Program − Provident with NSSF (-)
+  // Components such as Absence, Maternity, OT, Cash Advance and Seniority/GEP are
+  // intentionally NOT part of the Gross Salary calculation.
+  // Part-Time Gross = Pre.Pay − Absence + Maternity + OT + CashAdvance(+) − CashAdvance(−)
   //                   − Provident/NSSF + Seniority/GEP
-  // Semi-Full-Time Gross = Pre.Pay + Amount + HRM/After School − Provident/NSSF
   const rawGross =
-    emp.employmentType === 'Semi-Full-Time'
-      ? prepayAmount + calculatedAmount - emp.nssf + calculatedAfterSchool
-      : prepayAmount - calculatedAbsence + emp.maternity + calculatedOT + emp.caAdd - emp.caDed - emp.nssf + emp.seniority;
+    emp.employmentType === 'Part-Time'
+      ? prepayAmount - calculatedAbsence + emp.maternity + calculatedOT + emp.caAdd - emp.caDed - emp.nssf + emp.seniority
+      : prepayAmount + calculatedAmount - emp.nssf + calculatedAfterSchool;
   const computedGross = roundUSD(rawGross);
   const grossSalaryUSD = computedGross;
 

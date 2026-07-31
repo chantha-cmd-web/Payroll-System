@@ -427,12 +427,12 @@ export default function PayrollProcessor({
                 <th className="p-3.5 font-bold">Employment Date</th>
                 <th className="p-3.5 font-bold bg-blue-50/40 dark:bg-blue-950/10">Basic Salary</th>
                 <th className="p-3.5 font-bold">Pre. Pay / Percentage</th>
-                <th className="p-3.5 font-bold text-rose-500">Abs(-)</th>
-                <th className="p-3.5 font-bold text-emerald-500">Maternity</th>
-                <th className="p-3.5 font-bold text-emerald-500">OT (+)</th>
+                <th className="p-3.5 font-bold text-blue-500">Rate</th>
+                <th className="p-3.5 font-bold text-blue-500">Hour</th>
+                <th className="p-3.5 font-bold text-blue-500">Amount</th>
                 <th className="p-3.5 font-bold text-emerald-500">Cash Advance (+)</th>
-                <th className="p-3.5 font-bold text-rose-500">Cash Advance (-) / OT</th>
                 <th className="p-3.5 font-bold text-rose-500">Provident with NSSF(-)</th>
+                <th className="p-3.5 font-bold text-indigo-500">HRM/After school program</th>
                 <th className="p-3.5 font-bold">PTT/GEP</th>
                 <th className="p-3.5 font-bold bg-brand-50/40 dark:bg-brand-950/10 text-brand-600 dark:text-brand-400">G.Salary</th>
                 <th className="p-3.5 font-bold">Salary to be Paid (KHR)</th>
@@ -668,18 +668,17 @@ export default function PayrollProcessor({
                       textColor="text-slate-800 dark:text-slate-200 font-semibold bg-blue-50/20 dark:bg-blue-950/5" />
                     <EditableCell empId={emp.id} field="prePayPct" value={emp.prepayAmount} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
                       textColor="text-slate-500 font-mono" isCurrency={false} />
-                    <EditableCell empId={emp.id} field="absence" value={emp.absence} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
-                      textColor="text-rose-600 dark:text-rose-400 font-semibold" />
-                    <EditableCell empId={emp.id} field="maternity" value={emp.maternity} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
-                      textColor="text-emerald-600 dark:text-emerald-400 font-semibold" />
-                    <EditableCell empId={emp.id} field="ot" value={emp.ot} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
-                      textColor="text-emerald-600 dark:text-emerald-400 font-semibold" readOnly={!isFullTime} />
+                    <EditableCell empId={emp.id} field="hourlyRate" value={emp.hourlyRate} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-blue-600 dark:text-blue-400 font-semibold" isCurrency={false} />
+                    <EditableCell empId={emp.id} field="scheduleHours" value={emp.scheduleHours ?? 0} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-blue-600 dark:text-blue-400 font-semibold" isCurrency={false} />
+                    <td className="p-3 font-bold text-blue-600 dark:text-blue-400 font-mono bg-blue-50/20 dark:bg-blue-950/5">${(emp.hourlyRate * (emp.scheduleHours ?? 0)).toFixed(2)}</td>
                     <EditableCell empId={emp.id} field="caAdd" value={emp.caAdd} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
                       textColor="text-emerald-600 dark:text-emerald-400 font-semibold" />
-                    <EditableCell empId={emp.id} field="caDed" value={emp.caDed} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
-                      textColor="text-rose-600 dark:text-rose-400 font-semibold" />
                     <EditableCell empId={emp.id} field="nssf" value={emp.nssf} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
                       textColor="text-rose-600 dark:text-rose-400 font-semibold" />
+                    <EditableCell empId={emp.id} field="afterSchool" value={emp.afterSchool} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-indigo-600 dark:text-indigo-400 font-semibold" isCurrency={false} />
                     <EditableCell empId={emp.id} field="seniority" value={emp.seniority} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
                       textColor="text-slate-800 dark:text-slate-200" />
                     <td className="p-3 bg-brand-50/20 dark:bg-brand-950/5 text-brand-700 dark:text-brand-300 font-bold text-sm h-12 w-32 align-top">{formatUSD(emp.grossSalaryUSD)}</td>
