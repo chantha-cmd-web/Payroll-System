@@ -875,9 +875,17 @@ export default function App() {
                     <h1 className="text-base font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
                       Cambodia Enterprise Hub
                     </h1>
-                    <p className="text-[10px] text-slate-400 mt-0.5 font-medium uppercase tracking-widest font-mono">
-                      GDT Compliance Engine • active sandbox
-                    </p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <p className="text-[10px] text-slate-400 font-medium uppercase tracking-widest font-mono">
+                        GDT Compliance Engine • active sandbox
+                      </p>
+                      <span
+                        title={`Deployed git commit ${__APP_VERSION__}`}
+                        className="px-1.5 py-0.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 rounded font-mono text-[9px] font-bold"
+                      >
+                        build {__APP_VERSION__}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
