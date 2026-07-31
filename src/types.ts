@@ -53,8 +53,6 @@ export interface Employee {
   email: string;
   remarks: string;
   status: string;
-  customGrossUSD?: number;
-  customSalaryPaidKHR?: number;
 }
 
 export interface PayrollResult extends Employee {

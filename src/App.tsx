@@ -191,29 +191,13 @@ export default function App() {
     setConfirmDialog({
       isOpen: true,
       title: 'Reset OT & Substitutes',
-      message: 'Are you sure you want to reset OT to 0 for all employees? This will also clear manual gross salary overrides.',
+      message: 'Are you sure you want to reset OT to 0 for all employees?',
       onConfirm: () => {
-        setEmployees(prev => prev.map(emp => {
-          if (emp.customGrossUSD !== undefined || emp.customSalaryPaidKHR !== undefined) {
-            const newLog: AuditLog = {
-              id: Math.random().toString(36).substring(7),
-              timestamp: new Date().toISOString(),
-              user: 'Admin',
-              employeeName: emp.name,
-              field: 'Reset OT (Cleared Gross Salary Overrides)',
-              oldValue: emp.customGrossUSD !== undefined ? emp.customGrossUSD : emp.customSalaryPaidKHR,
-              newValue: undefined
-            };
-            setAuditLogs(logs => [newLog, ...logs]);
-          }
-          return { 
-            ...emp, 
-            ot: 0, 
-            substituteHours: 0,
-            customGrossUSD: undefined,
-            customSalaryPaidKHR: undefined 
-          };
-        }));
+        setEmployees(prev => prev.map(emp => ({
+          ...emp,
+          ot: 0,
+          substituteHours: 0
+        })));
         triggerToast('OT Reset', 'Overtime has been reset to 0 for all employees.', 'success');
         setConfirmDialog(null);
       }
@@ -579,22 +563,6 @@ export default function App() {
   const handleUpdateField = (id: number, field: string, value: string | number | boolean | undefined) => {
     const target = employees.find(e => e.id === id);
     if (!target) return;
-
-    if (field === 'customGrossUSD' || field === 'customSalaryPaidKHR') {
-      const oldValue = target[field as keyof Employee] as string | number | undefined;
-      if (oldValue !== value) {
-        const newLog: AuditLog = {
-          id: Math.random().toString(36).substring(7),
-          timestamp: new Date().toISOString(),
-          user: 'Admin', // User who performed the change
-          employeeName: target.name,
-          field: field === 'customGrossUSD' ? 'Gross Salary (USD)' : 'Salary Paid (KHR)',
-          oldValue,
-          newValue: value
-        };
-        setAuditLogs(prev => [newLog, ...prev]);
-      }
-    }
 
     const updated = { ...target, [field]: value };
     handleUpdateEmployee(updated);

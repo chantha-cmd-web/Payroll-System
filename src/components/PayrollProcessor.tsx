@@ -173,8 +173,6 @@ export default function PayrollProcessor({
       finalValue = value;
     } else if (['staffId', 'name', 'nat', 'pos', 'dept', 'campus', 'doj', 'empDate', 'bankAcc', 'email', 'remarks'].includes(field)) {
       finalValue = editValue;
-    } else if (['customGrossUSD', 'customSalaryPaidKHR'].includes(field) && editValue === '') {
-      finalValue = undefined as any;
     } else {
       // It's a number
       finalValue = parseFloat(editValue) || 0;
@@ -684,16 +682,8 @@ export default function PayrollProcessor({
                       textColor="text-rose-600 dark:text-rose-400 font-semibold" />
                     <EditableCell empId={emp.id} field="seniority" value={emp.seniority} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
                       textColor="text-slate-800 dark:text-slate-200" />
-                    <td className="p-3 bg-brand-50/20 dark:bg-brand-950/5 text-sm h-12 w-32 align-top">
-                      <input type="number" className="w-full bg-white/50 dark:bg-slate-800/50 border border-brand-200 dark:border-brand-800 rounded px-2 py-1 text-brand-700 dark:text-brand-300 font-bold focus:ring-2 focus:ring-brand-500 outline-none"
-                        value={emp.customGrossUSD !== undefined ? emp.customGrossUSD : ''} placeholder={emp.grossSalaryUSD.toString()}
-                        onChange={(e) => { const val = e.target.value; onUpdateField(emp.id, 'customGrossUSD', val === '' ? undefined : parseFloat(val)); }} />
-                    </td>
-                    <td className="p-3 bg-slate-50/50 dark:bg-slate-900/50 text-[11px] h-12 w-32 align-top">
-                      <input type="number" className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-300 dark:border-slate-700 rounded px-2 py-1 text-slate-700 dark:text-slate-300 font-mono font-semibold focus:ring-2 focus:ring-brand-500 outline-none"
-                        value={emp.customSalaryPaidKHR !== undefined ? emp.customSalaryPaidKHR : ''} placeholder={emp.salaryPaidKHR.toString()}
-                        onChange={(e) => { const val = e.target.value; onUpdateField(emp.id, 'customSalaryPaidKHR', val === '' ? undefined : parseFloat(val)); }} />
-                    </td>
+                    <td className="p-3 bg-brand-50/20 dark:bg-brand-950/5 text-brand-700 dark:text-brand-300 font-bold text-sm h-12 w-32 align-top">{formatUSD(emp.grossSalaryUSD)}</td>
+                    <td className="p-3 bg-slate-50/50 dark:bg-slate-900/50 font-mono font-semibold text-slate-700 dark:text-slate-300 text-[11px] h-12 w-32 align-top">{formatKHR(emp.salaryPaidKHR)}</td>
                     <td className="p-3 text-center text-[11px] font-medium text-slate-600 dark:text-slate-400">{emp.spouse || '-'}</td>
                     <td className="p-3 font-mono text-[11px] font-semibold text-slate-500 text-center">{emp.kids}</td>
                     <td className="p-3 font-semibold text-slate-700 dark:text-slate-300 font-mono text-[11px]">{formatKHR(((/^(yes|true|y|1)$/i.test(emp.spouse) ? 1 : Number(emp.spouse) > 0 ? 1 : 0) + emp.kids) * 150000)}</td>
@@ -727,11 +717,7 @@ export default function PayrollProcessor({
                     <EditableCell empId={emp.id} field="prePayPct" value={emp.prepayAmount} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
                       textColor="text-slate-500 font-mono" isCurrency={false}
                       className="p-3 border-r border-slate-100 dark:border-slate-800 cursor-pointer select-none group h-12 transition hover:bg-slate-100/60 dark:hover:bg-slate-800/40 text-center" />
-                    <td className="p-3 bg-brand-50/20 dark:bg-brand-950/5 text-sm h-12 w-32 align-top text-center border-r border-brand-100 dark:border-brand-900/50">
-                      <input type="number" className="w-full bg-transparent border-b border-transparent focus:border-brand-300 text-center text-brand-700 dark:text-brand-300 font-bold focus:outline-none"
-                        value={emp.customGrossUSD !== undefined ? emp.customGrossUSD : ''} placeholder={emp.grossSalaryUSD.toString()}
-                        onChange={(e) => { const val = e.target.value; onUpdateField(emp.id, 'customGrossUSD', val === '' ? undefined : parseFloat(val)); }} />
-                    </td>
+                    <td className="p-3 bg-brand-50/20 dark:bg-brand-950/5 text-brand-700 dark:text-brand-300 font-bold text-sm text-center border-r border-brand-100 dark:border-brand-900/50">{formatUSD(emp.grossSalaryUSD)}</td>
                     <td className="p-3 font-mono font-bold bg-amber-50/20 dark:bg-amber-950/5 text-amber-600 dark:text-amber-500 text-center border-r border-amber-100 dark:border-amber-900/50">{emp.taxRate}</td>
                     <td className="p-3 text-rose-500 bg-amber-50/20 dark:bg-amber-950/5 font-semibold text-center border-r border-amber-100 dark:border-amber-900/50">{formatUSD(emp.taxUSD)}</td>
                     <td className="p-3 font-semibold text-slate-800 dark:text-slate-200 text-center border-r border-slate-100 dark:border-slate-800">{formatUSD(emp.salaryAfterTaxUSD)}</td>
@@ -775,16 +761,8 @@ export default function PayrollProcessor({
                       textColor="text-indigo-600 dark:text-indigo-400 font-semibold" isCurrency={false} />
                     <EditableCell empId={emp.id} field="seniority" value={emp.seniority} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
                       textColor="text-slate-800 dark:text-slate-200" />
-                    <td className="p-3 bg-brand-50/20 dark:bg-brand-950/5 text-sm h-12 w-32 align-top">
-                      <input type="number" className="w-full bg-white/50 dark:bg-slate-800/50 border border-brand-200 dark:border-brand-800 rounded px-2 py-1 text-brand-700 dark:text-brand-300 font-bold focus:ring-2 focus:ring-brand-500 outline-none"
-                        value={emp.customGrossUSD !== undefined ? emp.customGrossUSD : ''} placeholder={emp.grossSalaryUSD.toString()}
-                        onChange={(e) => { const val = e.target.value; onUpdateField(emp.id, 'customGrossUSD', val === '' ? undefined : parseFloat(val)); }} />
-                    </td>
-                    <td className="p-3 bg-slate-50/50 dark:bg-slate-900/50 text-[11px] h-12 w-32 align-top">
-                      <input type="number" className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-300 dark:border-slate-700 rounded px-2 py-1 text-slate-700 dark:text-slate-300 font-mono font-semibold focus:ring-2 focus:ring-brand-500 outline-none"
-                        value={emp.customSalaryPaidKHR !== undefined ? emp.customSalaryPaidKHR : ''} placeholder={emp.salaryPaidKHR.toString()}
-                        onChange={(e) => { const val = e.target.value; onUpdateField(emp.id, 'customSalaryPaidKHR', val === '' ? undefined : parseFloat(val)); }} />
-                    </td>
+                    <td className="p-3 bg-brand-50/20 dark:bg-brand-950/5 text-brand-700 dark:text-brand-300 font-bold text-sm h-12 w-32 align-top">{formatUSD(emp.grossSalaryUSD)}</td>
+                    <td className="p-3 bg-slate-50/50 dark:bg-slate-900/50 font-mono font-semibold text-slate-700 dark:text-slate-300 text-[11px] h-12 w-32 align-top">{formatKHR(emp.salaryPaidKHR)}</td>
                     <td className="p-3 text-center text-[11px] font-medium text-slate-600 dark:text-slate-400">{emp.spouse || '-'}</td>
                     <td className="p-3 font-mono text-[11px] font-semibold text-slate-500 text-center">{emp.kids}</td>
                     <td className="p-3 font-semibold text-slate-700 dark:text-slate-300 font-mono text-[11px]">{formatKHR(((/^(yes|true|y|1)$/i.test(emp.spouse) ? 1 : Number(emp.spouse) > 0 ? 1 : 0) + emp.kids) * 150000)}</td>

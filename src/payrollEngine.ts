@@ -92,11 +92,11 @@ export function computePayroll(emp: Employee, exchangeRate: number): PayrollResu
       ? prepayAmount + emp.other + emp.maternity + calculatedAmount + emp.caAdd - emp.nssf + calculatedAfterSchool + emp.seniority
       : prepayAmount - calculatedAbsence + emp.maternity + calculatedOT + emp.caAdd - emp.caDed - emp.nssf + emp.seniority;
   const computedGross = roundUSD(rawGross);
-  const grossSalaryUSD = emp.customGrossUSD !== undefined ? emp.customGrossUSD : computedGross;
+  const grossSalaryUSD = computedGross;
 
   // --- 2. Salary to be Paid (KHR) = Gross × Exchange Rate ---
   const computedSalaryPaidKHR = roundKHR(grossSalaryUSD * exchangeRate);
-  const salaryPaidKHR = emp.customSalaryPaidKHR !== undefined ? emp.customSalaryPaidKHR : computedSalaryPaidKHR;
+  const salaryPaidKHR = computedSalaryPaidKHR;
 
   // --- 3. Salary Tax Calculation Base = Salary Paid − Family Relief (Allowance) ---
   const allowanceKHR = getFamilyReliefKHR(emp.spouse, emp.kids);

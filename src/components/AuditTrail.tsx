@@ -23,7 +23,7 @@ export default function AuditTrail({ logs }: AuditTrailProps) {
             Audit Trail
           </h3>
           <p className="text-sm text-slate-500 mt-1">
-            Log of manual overrides to gross salary and final salary payouts.
+            Log of all employee record changes across payroll runs.
           </p>
         </div>
         <div className="relative w-full sm:max-w-xs">

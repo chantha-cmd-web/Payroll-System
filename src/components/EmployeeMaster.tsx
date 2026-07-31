@@ -273,8 +273,6 @@ export default function EmployeeMaster({
                caDed: parseNumber(getValue(17, 0), 0),
                nssf: parseNumber(getValue(18, 0), 0),
                seniority: parseNumber(getValue(19, 0), 0),
-               customGrossUSD: getValue(20, '') !== '' ? parseNumber(getValue(20)) : undefined,
-               customSalaryPaidKHR: getValue(21, '') !== '' ? parseNumber(getValue(21)) : undefined,
                  spouse: String(getValue(22, '0')),
                kids: parseNumber(getValue(23, 0), 0),
                allowance: parseNumber(getValue(24, 0), 0),
