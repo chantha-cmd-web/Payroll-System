@@ -253,6 +253,33 @@ console.log('\n=== 6. Semi-Full-Time and Part-Time regression ===');
   check('Gross Salary (USD)', sft.grossSalaryUSD, 3980);
   check('Bank (USD)', sft.netBankUSD, roundUSD(sft.salaryAfterTaxUSD - 80 - 100 + 30 - 15));
   check('Gross for Summary (USD)', sft.grossForSummary, 3980);
+  // Spec formula, term-by-term: Pre.Pay + Other + Maternity + Amount + CA+ − NSSF + AfterSchool + Seniority
+  check('SFT Gross (spec formula)', sft.grossSalaryUSD, roundUSD(3500 + 50 + 0 + (20 * 10) + 100 - 0 + (5 * 10) + 80));
+  // Spec formula: AfterTax − Seniority − CA(+) + AdjustError − WorkBook
+  check('SFT Bank (spec formula)', sft.netBankUSD, roundUSD(sft.salaryAfterTaxUSD - 80 - 100 + 30 - 15));
+}
+{
+  const sft2 = computePayroll(ftEmployee({
+    id: 4,
+    employmentType: 'Semi-Full-Time',
+    basic: 2500,
+    hourlyRate: 8,
+    scheduleHours: 15,
+    afterSchool: 4,
+    other: 30,
+    maternity: 60,
+    caAdd: 40,
+    nssf: 25,
+    seniority: 70,
+    adjustError: 10,
+    workBook: 12
+  }), EXCHANGE_RATE);
+  console.log('  Scenario 6.2: Semi-Full-Time, all components');
+  // Spec formula: Pre.Pay(2500) + Other(30) + Maternity(60) + Amount(15*8) + CA+(40) − NSSF(25) + AfterSchool(4*8) + Seniority(70)
+  // = 2500 + 30 + 60 + 120 + 40 - 25 + 32 + 70 = 2827
+  check('SFT Gross (all components)', sft2.grossSalaryUSD, 2827);
+  check('SFT Bank (spec formula)', sft2.netBankUSD, roundUSD(sft2.salaryAfterTaxUSD - 70 - 40 + 10 - 12));
+  check('SFT Gross for Summary (USD)', sft2.grossForSummary, 2827);
 }
 {
   const pt = computePayroll(ftEmployee({
@@ -266,7 +293,7 @@ console.log('\n=== 6. Semi-Full-Time and Part-Time regression ===');
     caAdd: 0,
     sdReturn: 20
   }), EXCHANGE_RATE);
-  console.log('  Scenario 6.2: Part-Time');
+  console.log('  Scenario 6.3: Part-Time');
   // Base pay = 40*15 = 600, gross = 600 + 45 = 645
   check('Gross Salary (USD)', pt.grossSalaryUSD, 645);
   check('Bank (USD)', pt.netBankUSD, roundUSD(pt.salaryAfterTaxUSD + 20));
