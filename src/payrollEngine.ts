@@ -85,11 +85,12 @@ export function computePayroll(emp: Employee, exchangeRate: number): PayrollResu
 
   const prepayAmount = computePrepayAmount(emp, basePay);
 
-  // Gross = Pre.Pay − Absence + Maternity + OT + CashAdvance(+) − CashAdvance(−)
-  //         − Provident/NSSF + Seniority/GEP
+  // Full-Time Gross = Pre.Pay − Absence + Maternity + OT + CashAdvance(+) − CashAdvance(−)
+  //                   − Provident/NSSF + Seniority/GEP
+  // Semi-Full-Time Gross = Pre.Pay + Amount + HRM/After School − Provident/NSSF
   const rawGross =
     emp.employmentType === 'Semi-Full-Time'
-      ? prepayAmount + emp.other + emp.maternity + calculatedAmount + emp.caAdd - emp.nssf + calculatedAfterSchool + emp.seniority
+      ? prepayAmount + calculatedAmount - emp.nssf + calculatedAfterSchool
       : prepayAmount - calculatedAbsence + emp.maternity + calculatedOT + emp.caAdd - emp.caDed - emp.nssf + emp.seniority;
   const computedGross = roundUSD(rawGross);
   const grossSalaryUSD = computedGross;

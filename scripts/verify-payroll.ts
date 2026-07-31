@@ -249,12 +249,12 @@ console.log('\n=== 6. Semi-Full-Time and Part-Time regression ===');
     seniority: 80
   }), EXCHANGE_RATE);
   console.log('  Scenario 6.1: Semi-Full-Time');
-  // Gross = 3500 + 50 + 0 + 200 + 100 - 0 + 50 + 80 = 3980
-  check('Gross Salary (USD)', sft.grossSalaryUSD, 3980);
+  // Gross = Pre.Pay(3500) + Amount(20*10) − NSSF(0) + AfterSchool(5*10) = 3750
+  check('Gross Salary (USD)', sft.grossSalaryUSD, 3750);
   check('Bank (USD)', sft.netBankUSD, roundUSD(sft.salaryAfterTaxUSD - 80 - 100 + 30 - 15));
-  check('Gross for Summary (USD)', sft.grossForSummary, 3980);
-  // Spec formula, term-by-term: Pre.Pay + Other + Maternity + Amount + CA+ − NSSF + AfterSchool + Seniority
-  check('SFT Gross (spec formula)', sft.grossSalaryUSD, roundUSD(3500 + 50 + 0 + (20 * 10) + 100 - 0 + (5 * 10) + 80));
+  check('Gross for Summary (USD)', sft.grossForSummary, 3750);
+  // Spec formula, term-by-term: Pre.Pay + Amount + HRM/After School − Provident/NSSF
+  check('SFT Gross (spec formula)', sft.grossSalaryUSD, roundUSD(3500 + (20 * 10) - 0 + (5 * 10)));
   // Spec formula: AfterTax − Seniority − CA(+) + AdjustError − WorkBook
   check('SFT Bank (spec formula)', sft.netBankUSD, roundUSD(sft.salaryAfterTaxUSD - 80 - 100 + 30 - 15));
 }
@@ -275,11 +275,30 @@ console.log('\n=== 6. Semi-Full-Time and Part-Time regression ===');
     workBook: 12
   }), EXCHANGE_RATE);
   console.log('  Scenario 6.2: Semi-Full-Time, all components');
-  // Spec formula: Pre.Pay(2500) + Other(30) + Maternity(60) + Amount(15*8) + CA+(40) − NSSF(25) + AfterSchool(4*8) + Seniority(70)
-  // = 2500 + 30 + 60 + 120 + 40 - 25 + 32 + 70 = 2827
-  check('SFT Gross (all components)', sft2.grossSalaryUSD, 2827);
+  // Spec formula: Pre.Pay(2500) + Amount(15*8) − NSSF(25) + AfterSchool(4*8)
+  // = 2500 + 120 - 25 + 32 = 2627 (Other/Maternity/CA+/Seniority excluded from gross)
+  check('SFT Gross (all components)', sft2.grossSalaryUSD, 2627);
   check('SFT Bank (spec formula)', sft2.netBankUSD, roundUSD(sft2.salaryAfterTaxUSD - 70 - 40 + 10 - 12));
-  check('SFT Gross for Summary (USD)', sft2.grossForSummary, 2827);
+  check('SFT Gross for Summary (USD)', sft2.grossForSummary, 2627);
+}
+{
+  const sft3 = computePayroll(ftEmployee({
+    id: 5,
+    employmentType: 'Semi-Full-Time',
+    basic: 309.60,
+    hourlyRate: 1.29,
+    scheduleHours: 12.5,
+    afterSchool: 30,
+    other: 210.92,
+    nssf: 11.92
+  }), EXCHANGE_RATE);
+  console.log('  Scenario 6.4: Semi-Full-Time, user-reported Gross example');
+  // Pre.Pay(309.60) + Amount(12.5*1.29=16.13) − NSSF(11.92) + AfterSchool(30*1.29=38.70)
+  // = 309.60 + 16.13 - 11.92 + 38.70 = 352.51
+  // 'Other' (210.92) must NOT be included; before the fix this produced 563.43.
+  check('Pre. Pay (USD)', sft3.prepayAmount, 309.60);
+  check('SFT Gross (spec example)', sft3.grossSalaryUSD, 352.51);
+  check('SFT Gross for Summary (USD)', sft3.grossForSummary, 352.51);
 }
 {
   const pt = computePayroll(ftEmployee({
