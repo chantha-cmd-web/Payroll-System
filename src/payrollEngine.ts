@@ -85,11 +85,12 @@ export function computePayroll(emp: Employee, exchangeRate: number): PayrollResu
   } else {
     // Full-Time and Semi-Full-Time share the same Gross Salary inputs:
     //   Amount (USD) = Schedule Hours × Rate
-    //   HRM / After School Program (USD) = After School Hours × Rate
+    //   HRM / After School Program is already a USD amount in the workbook,
+    //   so it is added as-is (NOT multiplied by the hourly rate).
     // All inputs are defaulted to 0 so missing/legacy fields never produce NaN.
     basePay = emp.basic ?? 0;
     calculatedAmount = roundUSD((emp.scheduleHours ?? 0) * (emp.hourlyRate ?? 0));
-    calculatedAfterSchool = roundUSD((emp.afterSchool ?? 0) * (emp.hourlyRate ?? 0));
+    calculatedAfterSchool = roundUSD(emp.afterSchool ?? 0);
   }
 
   const prepayAmount = computePrepayAmount(emp, basePay);

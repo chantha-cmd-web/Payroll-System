@@ -676,7 +676,7 @@ export default function PayrollProcessor({
                     <EditableCell empId={emp.id} field="nssf" value={emp.nssf} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
                       textColor="text-rose-600 dark:text-rose-400 font-semibold" />
                     <EditableCell empId={emp.id} field="afterSchool" value={emp.afterSchool} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
-                      textColor="text-indigo-600 dark:text-indigo-400 font-semibold" isCurrency={false} />
+                      textColor="text-indigo-600 dark:text-indigo-400 font-semibold" />
                     <EditableCell empId={emp.id} field="seniority" value={emp.seniority} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
                       textColor="text-slate-800 dark:text-slate-200" />
                     <td className="p-3 bg-brand-50/20 dark:bg-brand-950/5 text-brand-700 dark:text-brand-300 font-bold text-sm h-12 w-32 align-top">{formatUSD(emp.grossSalaryUSD)}</td>
@@ -751,7 +751,7 @@ export default function PayrollProcessor({
                     <EditableCell empId={emp.id} field="nssf" value={emp.nssf} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
                       textColor="text-rose-600 dark:text-rose-400 font-semibold" />
                     <EditableCell empId={emp.id} field="afterSchool" value={emp.afterSchool} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
-                      textColor="text-indigo-600 dark:text-indigo-400 font-semibold" isCurrency={false} />
+                      textColor="text-indigo-600 dark:text-indigo-400 font-semibold" />
                     <EditableCell empId={emp.id} field="seniority" value={emp.seniority} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
                       textColor="text-slate-800 dark:text-slate-200" />
                     <td className="p-3 bg-brand-50/20 dark:bg-brand-950/5 text-brand-700 dark:text-brand-300 font-bold text-sm h-12 w-32 align-top">{formatUSD(emp.grossSalaryUSD)}</td>
