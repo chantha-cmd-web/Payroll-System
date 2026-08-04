@@ -109,20 +109,71 @@ export default function PayrollProcessor({
   };
 
   const handleExportExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(filteredData.map(emp => ({
-      'ID': emp.staffId,
-      'Name': emp.name,
-      'Nationality': emp.nat,
-      'Position': emp.pos,
-      'Department': emp.dept,
-      'Campus': emp.campus,
-      'Gross Salary (USD)': emp.grossSalaryUSD,
-      'Tax Base (KHR)': emp.taxBaseKHR,
-      'Tax Rate (%)': emp.taxRate,
-      'Tax Due (KHR)': emp.taxKHR,
-      'Tax Due (USD)': emp.taxUSD,
-      'Net Bank (USD)': emp.netBankUSD
-    })));
+    const isSemiFullTime = !isFullTime && !isPartTime;
+    const worksheet = XLSX.utils.json_to_sheet(filteredData.map(emp => {
+      if (isSemiFullTime) {
+        return {
+          'No.': emp.id,
+          'Staff ID': emp.staffId,
+          'Names': emp.name,
+          'Nationality': emp.nat,
+          'Position': emp.pos,
+          'Department': emp.dept,
+          'Campus': emp.campus,
+          'DOJ(Cal. Eff. Date)': emp.doj,
+          'Employment Date': emp.empDate,
+          'Basic Salary': emp.basic,
+          'Pre. Pay / Percentage': emp.prepayAmount,
+          'Rate': emp.hourlyRate,
+          'Hour': emp.scheduleHours ?? 0,
+          'Amount': Math.round((emp.hourlyRate ?? 0) * (emp.scheduleHours ?? 0) * 100) / 100,
+          'Cash Advance (+)': emp.caAdd,
+          'Provident with NSSF(-)': emp.nssf,
+          'HRM/After school program': emp.afterSchool,
+          'PTT/GEP': emp.seniority,
+          'G.Salary': emp.grossSalaryUSD,
+          'Salary to be Paid (KHR)': emp.salaryPaidKHR,
+          'Spouse': emp.spouse,
+          'Minor Children': emp.kids,
+          'Allawance': ((/^(yes|true|y|1)$/i.test(emp.spouse) ? 1 : Number(emp.spouse) > 0 ? 1 : 0) + emp.kids) * 150000,
+          'Salary Tax Calculation Base': emp.taxBaseKHR,
+          'Tax Rate': emp.taxRate,
+          'TOS (KHR)': emp.taxKHR,
+          'TOS ($)': emp.taxUSD,
+          'Total Salary After Tax ($)': emp.salaryAfterTaxUSD,
+          'Adjust error TOS /NSSF': emp.adjustError,
+          'Work Book (-)': emp.workBook,
+          'Bank': emp.netBankUSD,
+          'Bank Account Number': emp.bankAcc,
+          'Email': emp.email,
+          'Remarks': emp.remarks,
+          'Gross salary for summary': emp.grossForSummary
+        };
+      }
+      return {
+        'ID': emp.staffId,
+        'Name': emp.name,
+        'Nationality': emp.nat,
+        'Position': emp.pos,
+        'Department': emp.dept,
+        'Campus': emp.campus,
+        'Gross Salary (USD)': emp.grossSalaryUSD,
+        'Tax Base (KHR)': emp.taxBaseKHR,
+        'Tax Rate (%)': emp.taxRate,
+        'Tax Due (KHR)': emp.taxKHR,
+        'Tax Due (USD)': emp.taxUSD,
+        'Net Bank (USD)': emp.netBankUSD
+      };
+    }));
+    if (isSemiFullTime) {
+      worksheet['!cols'] = [
+        { wch: 5 }, { wch: 10 }, { wch: 22 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 10 },
+        { wch: 14 }, { wch: 14 }, { wch: 12 }, { wch: 16 }, { wch: 8 }, { wch: 8 }, { wch: 10 },
+        { wch: 14 }, { wch: 18 }, { wch: 18 }, { wch: 10 }, { wch: 10 }, { wch: 18 }, { wch: 8 },
+        { wch: 13 }, { wch: 10 }, { wch: 18 }, { wch: 8 }, { wch: 12 }, { wch: 10 }, { wch: 18 },
+        { wch: 16 }, { wch: 12 }, { wch: 10 }, { wch: 16 }, { wch: 22 }, { wch: 20 }, { wch: 16 }
+      ];
+    }
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Payroll');
     XLSX.writeFile(workbook, `Payroll_Data_${new Date().toISOString().split('T')[0]}.xlsx`);
