@@ -172,23 +172,24 @@ export default function EmployeeMaster({
                else if (norm.includes('dept')) columnIndexMap[6] = index;
                else if (norm.includes('campus')) columnIndexMap[7] = index;
                else if (norm.includes('doj')) columnIndexMap[9] = index;
-               else if (norm.includes('empdate')) columnIndexMap[10] = index;
+                else if (norm.includes('emp') && norm.includes('date')) columnIndexMap[10] = index;
                else if (norm.includes('basic')) columnIndexMap[11] = index;
                else if (norm.includes('prepay') || norm.includes('percentage')) columnIndexMap[12] = index;
-               else if (norm.includes('rate') && !norm.includes('corporate')) columnIndexMap[100] = index;
-               else if (norm.includes('schedule') || norm.includes('teaching')) columnIndexMap[101] = index;
+                else if (norm.includes('rate') && !norm.includes('corporate') && !norm.includes('tax')) columnIndexMap[100] = index;
+                else if (norm.includes('schedule') || norm.includes('teaching') || norm === 'hour') columnIndexMap[101] = index;
                else if (norm.includes('abs')) columnIndexMap[13] = index;
                else if (norm.includes('mat')) columnIndexMap[14] = index;
                else if (norm.includes('ot')) columnIndexMap[15] = index;
                else if (norm.includes('adv') && (rawLower.includes('+') || rawLower.includes('add') || norm.includes('senior'))) columnIndexMap[16] = index;
                else if (norm.includes('adv') && (rawLower.includes('-') || rawLower.includes('ded') || rawLower.includes('minus'))) columnIndexMap[17] = index;
-               else if (norm.includes('nssf')) columnIndexMap[18] = index;
-               else if (norm.includes('seniority')) columnIndexMap[19] = index;
+                else if (norm.includes('adjusterror') || (norm.includes('adjust') && norm.includes('tos')) || (norm.includes('error') && norm.includes('nssf'))) columnIndexMap[108] = index;
+                else if (norm.includes('nssf')) columnIndexMap[18] = index;
+                else if (norm.includes('seniority') || norm.includes('ptt')) columnIndexMap[19] = index;
                else if (norm.includes('gross') || norm.includes('gsalary')) columnIndexMap[20] = index;
                else if (norm.includes('salarytobepaid') || (norm.includes('salary') && norm.includes('paid'))) columnIndexMap[21] = index;
                else if (norm.includes('spouse')) columnIndexMap[22] = index;
                else if (norm.includes('child') || norm.includes('kid')) columnIndexMap[23] = index;
-               else if (norm.includes('allowance')) columnIndexMap[24] = index;
+                else if (norm.includes('allowance') || norm.includes('allawance')) columnIndexMap[24] = index;
                else if (norm.includes('sdreturn') || norm.includes('visa')) columnIndexMap[30] = index;
                else if (norm.includes('prov')) columnIndexMap[31] = index;
                else if (norm.includes('group')) columnIndexMap[110] = index;
@@ -201,9 +202,8 @@ export default function EmployeeMaster({
                else if (norm.includes('absence') && (norm.includes('hr') || norm.includes('hour'))) columnIndexMap[104] = index;
                else if (norm.includes('substitute') || norm.includes('subhrs') || norm.includes('subhr')) columnIndexMap[105] = index;
                else if (norm.includes('afterschool') || norm === 'after' || (norm.includes('hrm') && norm.includes('after')) || norm.includes('schoolprogram') || (norm.includes('after') && norm.includes('school'))) columnIndexMap[106] = index;
-               else if (norm === 'other' || norm.includes('otheradj')) columnIndexMap[107] = index;
-               else if (norm.includes('adjusterror') || (norm.includes('adjust') && norm.includes('tos')) || (norm.includes('error') && norm.includes('nssf'))) columnIndexMap[108] = index;
-               else if (norm.includes('workbook') || (norm.includes('work') && norm.includes('book'))) columnIndexMap[109] = index;
+                else if (norm === 'other' || norm.includes('otheradj')) columnIndexMap[107] = index;
+                else if (norm.includes('workbook') || (norm.includes('work') && norm.includes('book'))) columnIndexMap[109] = index;
                 else if (norm.includes('type') || norm.includes('employmenttype')) columnIndexMap[99] = index;
             }
          });
@@ -215,6 +215,10 @@ export default function EmployeeMaster({
             const parsed = Number(cleaned);
             return isNaN(parsed) ? defaultVal : parsed;
          };
+
+         // Headers marked with "(-)" (e.g. NSSF(-), Work Book (-), Cash Advance(-)) mean a deduction.
+         // The engine already subtracts these fields, so normalize imported values to positive.
+         const parseDeduction = (val: any, defaultVal: number = 0) => Math.abs(parseNumber(val, defaultVal));
 
         let importedCount = 0;
         let autoIdCounter = 1;
@@ -264,14 +268,14 @@ export default function EmployeeMaster({
                afterSchool: parseNumber(getValue(106, 0), 0),
                other: parseNumber(getValue(107, 0), 0),
                adjustError: parseNumber(getValue(108, 0), 0),
-               workBook: parseNumber(getValue(109, 0), 0),
+               workBook: parseDeduction(getValue(109, 0), 0),
                 prePayPct: parseNumber(getValue(12, 100), 100),
                absence: parseNumber(getValue(13, 0), 0),
                maternity: parseNumber(getValue(14, 0), 0),
                ot: parseNumber(getValue(15, 0), 0),
                caAdd: parseNumber(getValue(16, 0), 0),
-               caDed: parseNumber(getValue(17, 0), 0),
-               nssf: parseNumber(getValue(18, 0), 0),
+               caDed: parseDeduction(getValue(17, 0), 0),
+               nssf: parseDeduction(getValue(18, 0), 0),
                seniority: parseNumber(getValue(19, 0), 0),
                  spouse: String(getValue(22, '0')),
                kids: parseNumber(getValue(23, 0), 0),
@@ -336,7 +340,7 @@ export default function EmployeeMaster({
       headers = [
         ...commonHeaders,
         'Basic Salary', 'Prepay %', 'Other', 'Maternity(+)', 'Rate (Hourly)', 'Schedule Hours',
-        'Cash Advance(+)', 'NSSF(-)', 'After School Hours', 'Seniority',
+        'Cash Advance(+)', 'NSSF(-)', 'After School Program (USD)', 'Seniority',
         'Spouse', 'Kids', 'Allowance', 'Adjust Error TOS/NSSF', 'Work Book (-)',
         'Bank Acc', 'Email', 'Remarks', 'Status', ...typeSuffix
       ];

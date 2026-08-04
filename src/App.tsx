@@ -301,6 +301,19 @@ export default function App() {
       if (idCol) break;
     }
 
+    const num = (val: any) => {
+      if (val === undefined || val === null || val === '') return undefined;
+      const n = Number(String(val).replace(/,/g, ''));
+      return isNaN(n) ? undefined : n;
+    };
+    // Columns marked "(-)" (e.g. Provident with NSSF(-), Work Book (-)) are deductions.
+    // The engine subtracts them, so normalize imported values to positive.
+    const absNum = (val: any) => {
+      const n = num(val);
+      return n === undefined ? undefined : Math.abs(n);
+    };
+    const first = (...vals: any[]) => vals.find(v => num(v) !== undefined);
+
     setEmployees(prev => {
       const updatedEmployees = [...prev];
       records.forEach(record => {
@@ -313,9 +326,6 @@ export default function App() {
 
         if (!staffId || staffId.toLowerCase().includes('id') || staffId.toLowerCase().includes('staff')) return;
 
-        const rate = Number(String(record.Rate || record.rate || record['Rate per hour'] || record['Hr Rate'] || record['Hr. Rate'] || record.L || record.K || '').replace(/,/g, '')) || 0;
-        const basic = Number(String(record.Basic || record.basic || record['Basic Salary'] || record['basic salary'] || record.J || '').replace(/,/g, '')) || 0;
-
         const normalizedStaffId = staffId.toUpperCase().replace(/\s+/g, '');
 
         const empIndex = updatedEmployees.findIndex(e => 
@@ -326,10 +336,50 @@ export default function App() {
         if (empIndex === -1) {
           missingIds.add(normalizedStaffId);
         } else {
+          const existing = updatedEmployees[empIndex];
+          const rate = first(record.Rate, record.rate, record['Rate per hour'], record['Hr Rate'], record['Hr. Rate'], record.L, record.K) ?? existing.hourlyRate;
+          const basic = first(record.Basic, record.basic, record['Basic Salary'], record['basic salary'], record.J) ?? existing.basic;
+          const nssf = absNum(record['Provident with NSSF(-)'] ?? record['NSSF(-)'] ?? record.NSSF ?? record.nssf) ?? existing.nssf;
+          const afterSchool = first(
+            record['HRM/After school program'],
+            record['After School Program (USD)'],
+            record['After School Hours'],
+            record['After School'],
+            record.afterSchool,
+            record.afterSchoolProgram
+          ) ?? existing.afterSchool;
+          const workBook = absNum(record['Work Book (-)'] ?? record['Work Book'] ?? record.workBook) ?? existing.workBook;
+          const adjustError = first(
+            record['Adjust error TOS /NSSF'],
+            record['Adjust Error TOS/NSSF'],
+            record['Adjust Error'],
+            record.adjustError
+          ) ?? existing.adjustError;
+          const prePayPct = first(
+            record['Pre. Pay / Percentage'],
+            record['Pre Pay'],
+            record['Prepay %'],
+            record.prePayPct,
+            record.prepayAmount
+          ) ?? existing.prePayPct;
+          const scheduleHours = first(
+            record.Hour,
+            record['Schedule Hours'],
+            record.scheduleHours,
+            record.Teaching,
+            record['Teaching Hours']
+          ) ?? existing.scheduleHours;
+
           updatedEmployees[empIndex] = {
-            ...updatedEmployees[empIndex],
-            hourlyRate: rate || updatedEmployees[empIndex].hourlyRate,
-            basic: basic || updatedEmployees[empIndex].basic
+            ...existing,
+            hourlyRate: rate,
+            basic: basic,
+            nssf: nssf,
+            afterSchool: afterSchool,
+            workBook: workBook,
+            adjustError: adjustError,
+            prePayPct: prePayPct,
+            scheduleHours: scheduleHours
           };
           updateCount++;
         }
@@ -341,7 +391,7 @@ export default function App() {
       triggerToast('Salary Sync Warning', `Missing IDs not found: ${Array.from(missingIds).join(', ')}`, 'warning');
     }
     if (updateCount > 0) {
-      triggerToast('Salary Synced', `${updateCount} staff basic salary & rate records updated.`, 'success');
+      triggerToast('Salary Synced', `${updateCount} staff salary & rate records updated.`, 'success');
     }
   };
 
