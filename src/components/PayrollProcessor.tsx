@@ -670,7 +670,7 @@ export default function PayrollProcessor({
                       textColor="text-blue-600 dark:text-blue-400 font-semibold" isCurrency={false} />
                     <EditableCell empId={emp.id} field="scheduleHours" value={emp.scheduleHours ?? 0} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
                       textColor="text-blue-600 dark:text-blue-400 font-semibold" isCurrency={false} />
-                    <td className="p-3 font-bold text-blue-600 dark:text-blue-400 font-mono bg-blue-50/20 dark:bg-blue-950/5">${(emp.hourlyRate * (emp.scheduleHours ?? 0)).toFixed(2)}</td>
+                    <td className="p-3 font-bold text-blue-600 dark:text-blue-400 font-mono bg-blue-50/20 dark:bg-blue-950/5">${((emp.hourlyRate ?? 0) * (emp.scheduleHours ?? 0)).toFixed(2)}</td>
                     <EditableCell empId={emp.id} field="caAdd" value={emp.caAdd} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
                       textColor="text-emerald-600 dark:text-emerald-400 font-semibold" />
                     <EditableCell empId={emp.id} field="nssf" value={emp.nssf} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
@@ -745,7 +745,7 @@ export default function PayrollProcessor({
                       textColor="text-blue-600 dark:text-blue-400 font-semibold" isCurrency={false} />
                     <EditableCell empId={emp.id} field="scheduleHours" value={emp.scheduleHours ?? 0} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
                       textColor="text-blue-600 dark:text-blue-400 font-semibold" isCurrency={false} />
-                    <td className="p-3 font-bold text-blue-600 dark:text-blue-400 font-mono bg-blue-50/20 dark:bg-blue-950/5">${(emp.hourlyRate * (emp.scheduleHours ?? 0)).toFixed(2)}</td>
+                    <td className="p-3 font-bold text-blue-600 dark:text-blue-400 font-mono bg-blue-50/20 dark:bg-blue-950/5">${((emp.hourlyRate ?? 0) * (emp.scheduleHours ?? 0)).toFixed(2)}</td>
                     <EditableCell empId={emp.id} field="caAdd" value={emp.caAdd} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
                       textColor="text-emerald-600 dark:text-emerald-400 font-semibold" />
                     <EditableCell empId={emp.id} field="nssf" value={emp.nssf} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}

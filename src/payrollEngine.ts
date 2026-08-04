@@ -22,14 +22,19 @@ export function getFamilyReliefKHR(spouse: string, kids: number): number {
   return (getSpouseCount(spouse) + kids) * 150000;
 }
 
-// Pre. Pay / Percentage auto calculation based on employment status.
+// Pre. Pay / Percentage auto calculation based on the approved workbook formula:
+//   =ROUND(IF(AV="TT", Basic/2, IF(AV="UN", 0, IF(AV="ML", 0, IF(AV="T", Basic*1, ...)))), 2)
+// Statuses not locked by the formula (W, SP, N, unknown) and any other override
+// use the Pre. Pay % field: > 100 is a direct USD amount, otherwise a % of Basic.
+// This keeps the Pre. Pay worksheet cell editable so it always drives the Gross.
 export function computePrepayAmount(emp: Employee, basePay: number): number {
-  let prepayAmount = 0;
-  if (emp.status === 'TT') {
+  const status = String(emp.status || '').toUpperCase();
+  let prepayAmount: number;
+  if (status === 'TT') {
     prepayAmount = basePay / 2;
-  } else if (emp.status === 'UN' || emp.status === 'ML' || emp.status === 'SH') {
+  } else if (status === 'UN' || status === 'ML' || status === 'SH') {
     prepayAmount = 0;
-  } else if (emp.status === 'T' || emp.status === 'W') {
+  } else if (status === 'T') {
     prepayAmount = basePay;
   } else {
     // Fallback / manual entry: > 100 is treated as a direct monetary amount,
@@ -75,15 +80,16 @@ export function computePayroll(emp: Employee, exchangeRate: number): PayrollResu
   let calculatedAmount = 0;
 
   if (emp.employmentType === 'Part-Time') {
-    basePay = roundUSD(emp.hourlyRate * emp.presentHours);
-    calculatedAbsence = roundUSD(emp.absenceHours * emp.hourlyRate);
+    basePay = roundUSD((emp.hourlyRate ?? 0) * (emp.presentHours ?? 0));
+    calculatedAbsence = roundUSD((emp.absenceHours ?? 0) * (emp.hourlyRate ?? 0));
   } else {
     // Full-Time and Semi-Full-Time share the same Gross Salary inputs:
     //   Amount (USD) = Schedule Hours × Rate
     //   HRM / After School Program (USD) = After School Hours × Rate
-    basePay = emp.basic;
-    calculatedAmount = roundUSD((emp.scheduleHours ?? 0) * emp.hourlyRate);
-    calculatedAfterSchool = roundUSD(emp.afterSchool * emp.hourlyRate);
+    // All inputs are defaulted to 0 so missing/legacy fields never produce NaN.
+    basePay = emp.basic ?? 0;
+    calculatedAmount = roundUSD((emp.scheduleHours ?? 0) * (emp.hourlyRate ?? 0));
+    calculatedAfterSchool = roundUSD((emp.afterSchool ?? 0) * (emp.hourlyRate ?? 0));
   }
 
   const prepayAmount = computePrepayAmount(emp, basePay);

@@ -6,7 +6,7 @@
  * Run with: npx tsx scripts/verify-payroll.ts
  */
 
-import { computePayroll, computeTax, getFamilyReliefKHR, roundUSD, roundKHR } from '../src/payrollEngine';
+import { computePayroll, computeTax, computePrepayAmount, getFamilyReliefKHR, roundUSD, roundKHR } from '../src/payrollEngine';
 import { Employee } from '../src/types';
 
 let passed = 0;
@@ -396,6 +396,77 @@ console.log('\n=== 7. Seniority & Cash Advance net-zero treatment ===');
   console.log('  Scenario 7.1: seniority/CA excluded from gross, recovered at bank');
   check('Gross excludes seniority + CA(+)', p.grossSalaryUSD, 1000);
   check('Bank recovers seniority + CA(+)', p.netBankUSD, roundUSD(p.salaryAfterTaxUSD - 500 - 300));
+}
+
+console.log('\n=== 8. Approved Pre.Pay formula (user workbook) ===');
+// Excel Pre.Pay: =ROUND(IF(AV="TT", Basic/2, IF(AV="UN", 0, IF(AV="ML", 0, IF(AV="T", Basic*1, ...)))), 2)
+// SP/N return "check" in Excel -> app uses the Pre.Pay % / direct-USD override.
+// W (app default) uses the same override so the Pre.Pay cell stays editable.
+{
+  check('TT -> Basic/2', computePrepayAmount(ftEmployee({ status: 'TT', basic: 1000 }), 1000), 500);
+  check('UN -> 0', computePrepayAmount(ftEmployee({ status: 'UN', basic: 1000 }), 1000), 0);
+  check('ML -> 0', computePrepayAmount(ftEmployee({ status: 'ML', basic: 1000 }), 1000), 0);
+  check('SH -> 0', computePrepayAmount(ftEmployee({ status: 'SH', basic: 1000 }), 1000), 0);
+  check('T -> Basic', computePrepayAmount(ftEmployee({ status: 'T', basic: 1000 }), 1000), 1000);
+  check('W @ 100% -> Basic', computePrepayAmount(ftEmployee({ status: 'W', basic: 1000, prePayPct: 100 }), 1000), 1000);
+  check('W @ 50% -> 500', computePrepayAmount(ftEmployee({ status: 'W', basic: 1000, prePayPct: 50 }), 1000), 500);
+  check('SP @ 60% -> 600', computePrepayAmount(ftEmployee({ status: 'SP', basic: 1000, prePayPct: 60 }), 1000), 600);
+  check('N direct USD override 700 -> 700', computePrepayAmount(ftEmployee({ status: 'N', basic: 1000, prePayPct: 700 }), 1000), 700);
+}
+
+console.log('\n=== 9. Semi-Full-Time Gross with editable Pre.Pay % ===');
+{
+  const p = computePayroll(ftEmployee({
+    id: 6,
+    employmentType: 'Semi-Full-Time',
+    basic: 1000,
+    hourlyRate: 5,
+    scheduleHours: 20,
+    afterSchool: 4,
+    prePayPct: 50,
+    status: 'W'
+  }), EXCHANGE_RATE);
+  console.log('  Scenario 9.1: SFT status W, Pre.Pay% = 50, 20h @ $5 + 4h after school @ $5');
+  // Pre.Pay(500) + Amount(100) + After School(20) - NSSF(0) = 620
+  check('Pre. Pay honoured (50% of 1000)', p.prepayAmount, 500);
+  check('SFT Gross (USD)', p.grossSalaryUSD, 620);
+  check('SFT Gross for Summary (USD)', p.grossForSummary, 620);
+}
+{
+  const p = computePayroll(ftEmployee({
+    id: 7,
+    employmentType: 'Semi-Full-Time',
+    basic: 2500,
+    hourlyRate: 4,
+    scheduleHours: 25,
+    afterSchool: 6,
+    nssf: 40,
+    status: 'T'
+  }), EXCHANGE_RATE);
+  console.log('  Scenario 9.2: SFT status T (full Pre.Pay)');
+  // Pre.Pay(2500) + Amount(100) + After School(24) - NSSF(40) = 2584
+  check('Pre. Pay (T -> Basic)', p.prepayAmount, 2500);
+  check('SFT Gross (USD)', p.grossSalaryUSD, 2584);
+}
+
+console.log('\n=== 10. NaN safety for legacy / imported records ===');
+{
+  const missing: any = ftEmployee({ id: 8, employmentType: 'Semi-Full-Time', basic: 1000, status: 'W' });
+  delete missing.afterSchool;
+  delete missing.hourlyRate;
+  delete missing.scheduleHours;
+  const p = computePayroll(missing, EXCHANGE_RATE);
+  console.log('  Scenario 10.1: SFT record missing afterSchool/hourlyRate/scheduleHours');
+  check('Gross Salary (USD) is not NaN', p.grossSalaryUSD, 1000);
+  check('Salary to be Paid (KHR) is not NaN', p.salaryPaidKHR, 1000 * EXCHANGE_RATE);
+}
+{
+  const missingPT: any = ftEmployee({ id: 9, employmentType: 'Part-Time', basic: 0, status: 'W' });
+  delete missingPT.hourlyRate;
+  delete missingPT.presentHours;
+  const p = computePayroll(missingPT, EXCHANGE_RATE);
+  console.log('  Scenario 10.2: Part-Time record missing hourlyRate/presentHours');
+  check('Gross Salary (USD) is not NaN', p.grossSalaryUSD, 0);
 }
 
 console.log(`\n${passed} passed, ${failed} failed`);
