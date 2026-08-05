@@ -259,7 +259,7 @@ export default function App() {
       for (const [staffId, data] of Object.entries(aggregated)) {
         const empIndex = updatedEmployees.findIndex(e => 
           e.staffId.toUpperCase().replace(/\s+/g, '') === staffId && 
-          (e.employmentType === 'Semi-Full-Time' || e.employmentType === 'Part-Time')
+          (e.employmentType === 'Full-Time' || e.employmentType === 'Semi-Full-Time' || e.employmentType === 'Part-Time')
         );
         
         if (empIndex === -1) {
@@ -330,7 +330,7 @@ export default function App() {
 
         const empIndex = updatedEmployees.findIndex(e => 
           e.staffId.toUpperCase().replace(/\s+/g, '') === normalizedStaffId && 
-          (e.employmentType === 'Semi-Full-Time' || e.employmentType === 'Part-Time')
+          (e.employmentType === 'Full-Time' || e.employmentType === 'Semi-Full-Time' || e.employmentType === 'Part-Time')
         );
         
         if (empIndex === -1) {
@@ -369,6 +369,14 @@ export default function App() {
             record.Teaching,
             record['Teaching Hours']
           ) ?? existing.scheduleHours;
+          const absence = first(record['Abs(-)'], record['Absence(-)'], record.Absence, record.absence) ?? existing.absence;
+          const maternity = first(record['Maternity(+)'], record.Maternity, record.maternity) ?? existing.maternity;
+          const ot = first(record['OT (+)'], record['OT(+)'], record.OT, record.ot) ?? existing.ot;
+          const caAdd = first(record['Cash Advance (+)'], record['CashAdvance(+)'], record.caAdd) ?? existing.caAdd;
+          const caDed = absNum(record['Cash Advance (-)'] ?? record['CashAdvance(-)'] ?? record.caDed) ?? existing.caDed;
+          const seniority = first(record['Seniority/GEP'], record.Seniority, record.seniority) ?? existing.seniority;
+          const sdReturn = first(record['SD Return (+)/ Visa Extension'], record['SD Return'], record.sdReturn) ?? existing.sdReturn;
+          const workPermit = first(record['Work Permit (+)'], record.other) ?? existing.other;
 
           updatedEmployees[empIndex] = {
             ...existing,
@@ -379,7 +387,15 @@ export default function App() {
             workBook: workBook,
             adjustError: adjustError,
             prePayPct: prePayPct,
-            scheduleHours: scheduleHours
+            scheduleHours: scheduleHours,
+            absence: absence,
+            maternity: maternity,
+            ot: ot,
+            caAdd: caAdd,
+            caDed: caDed,
+            seniority: seniority,
+            sdReturn: sdReturn,
+            other: workPermit
           };
           updateCount++;
         }
@@ -442,7 +458,7 @@ export default function App() {
 
         const empIndex = updatedEmployees.findIndex(e => 
           e.staffId.toUpperCase().replace(/\s+/g, '') === normalizedStaffId && 
-          (e.employmentType === 'Semi-Full-Time' || e.employmentType === 'Part-Time')
+          (e.employmentType === 'Full-Time' || e.employmentType === 'Semi-Full-Time' || e.employmentType === 'Part-Time')
         );
         
         if (empIndex === -1) {
@@ -1031,6 +1047,9 @@ export default function App() {
                         onResetOT={handleResetOT}
                         exchangeRate={exchangeRate}
                         isFullTime={true}
+                        onSyncAttendance={syncAttendanceData}
+                        onSyncSalary={syncSalaryInfo}
+                        onSyncStatus={syncStatusData}
                       />
                     )}
 

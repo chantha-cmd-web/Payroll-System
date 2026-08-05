@@ -203,6 +203,7 @@ export default function EmployeeMaster({
                else if (norm.includes('substitute') || norm.includes('subhrs') || norm.includes('subhr')) columnIndexMap[105] = index;
                else if (norm.includes('afterschool') || norm === 'after' || (norm.includes('hrm') && norm.includes('after')) || norm.includes('schoolprogram') || (norm.includes('after') && norm.includes('school'))) columnIndexMap[106] = index;
                 else if (norm === 'other' || norm.includes('otheradj')) columnIndexMap[107] = index;
+                else if (norm.includes('workpermit')) columnIndexMap[107] = index;
                 else if (norm.includes('workbook') || (norm.includes('work') && norm.includes('book'))) columnIndexMap[109] = index;
                 else if (norm.includes('type') || norm.includes('employmenttype')) columnIndexMap[99] = index;
             }
@@ -330,10 +331,10 @@ export default function EmployeeMaster({
     if (activeTab === 'Full-Time') {
       headers = [
         ...commonHeaders,
-        'Basic Salary', 'Prepay %', 'Absence(-)', 'Maternity(+)', 'OT(+)',
-        'Cash Advance(+)', 'Cash Advance(-)', 'NSSF(-)', 'Seniority',
-        'Spouse', 'Kids', 'Allowance', 'SD Return (+)/ Visa Extension Work Permit (+)',
-        'Other', 'Group', 'Saving AMT',
+        'Basic Salary', 'Prepay %', 'Abs(-)', 'Maternity(+)', 'OT (+)',
+        'Cash Advance (+)', 'Cash Advance (-)', 'Provident with NSSF(-)', 'Seniority/GEP',
+        'Spouse', 'Kids', 'Allowance', 'SD Return (+)/ Visa Extension', 'Work Permit (+)',
+        'Group', 'Saving AMT',
         'Bank Acc', 'Email', 'Remarks', 'Status', ...typeSuffix
       ];
     } else if (activeTab === 'Semi-Full-Time') {

@@ -83,6 +83,50 @@ const SEMI_FULL_TIME_NUMFMT: Record<number, string> = {
   34: '"$"#,##0.00'
 };
 
+const FULL_TIME_HEADERS = [
+  'No.', 'Staff ID', 'Names', 'Nationality', 'Position', 'Department', 'Campus',
+  'DOJ(Cal. Eff. Date)', 'Employment Date', 'Basic Salary', 'Pre. Pay / Percentage',
+  'Abs(-)', 'Maternity(+)', 'OT (+)', 'Cash Advance (+)', 'Cash Advance (-)',
+  'Provident with NSSF(-)', 'Seniority/GEP', 'G.Salary', 'Salary to be Paid (KHR)',
+  'Spouse', 'Minor Children', 'Allawance', 'Salary Tax Calculation Base', 'Tax Rate',
+  'TOS (KHR)', 'TOS ($)', 'Total Salary After Tax ($)', 'SD Return (+)/ Visa Extension',
+  'Work Permit (+)', 'Group', 'Saving AMT', 'Bank', 'Bank Account Number', 'Email',
+  'Remarks', 'Gross for Summary'
+];
+
+const FULL_TIME_COL_WCH = [
+  5, 10, 22, 12, 12, 12, 10, 14, 14, 12, 16, 10, 12, 10, 14, 14, 18, 14, 10, 18,
+  8, 13, 10, 18, 8, 12, 10, 18, 20, 12, 10, 10, 10, 16, 22, 20, 16
+];
+
+const FULL_TIME_CENTERED_COLS = new Set([0, 20, 21, 24]);
+
+const FULL_TIME_NUMFMT: Record<number, string> = {
+  0: '0',
+  9: '"$"#,##0.00',
+  10: '"$"#,##0.00',
+  11: '"$"#,##0.00',
+  12: '"$"#,##0.00',
+  13: '"$"#,##0.00',
+  14: '"$"#,##0.00',
+  15: '"$"#,##0.00',
+  16: '"$"#,##0.00',
+  17: '"$"#,##0.00',
+  18: '"$"#,##0.00',
+  19: '#,##0',
+  21: '0',
+  22: '#,##0',
+  23: '#,##0',
+  25: '#,##0',
+  26: '"$"#,##0.00',
+  27: '"$"#,##0.00',
+  28: '"$"#,##0.00',
+  29: '"$"#,##0.00',
+  31: '"$"#,##0.00',
+  32: '"$"#,##0.00',
+  36: '"$"#,##0.00'
+};
+
 function buildSemiFullTimeSheet(data: PayrollResult[], exchangeRate: number): XLSXNS.WorkSheet {
   const rows: (string | number | { f: string })[][] = [SEMI_FULL_TIME_HEADERS.slice()];
 
@@ -144,6 +188,77 @@ function buildSemiFullTimeSheet(data: PayrollResult[], exchangeRate: number): XL
           ? EXPORT_CENTERED_DATA_STYLE
           : EXPORT_DATA_STYLE;
         const fmt = SEMI_FULL_TIME_NUMFMT[C];
+        if (fmt) cell.z = fmt;
+      }
+    }
+  }
+
+  return sheet;
+}
+
+function buildFullTimeSheet(data: PayrollResult[], exchangeRate: number): XLSXNS.WorkSheet {
+  const rows: (string | number | { f: string })[][] = [FULL_TIME_HEADERS.slice()];
+
+  data.forEach((emp, index) => {
+    const rowNum = index + 2;
+    const col = (letter: string) => `${letter}${rowNum}`;
+    rows.push([
+      emp.id,
+      emp.staffId,
+      emp.name,
+      emp.nat,
+      emp.pos,
+      emp.dept,
+      emp.campus,
+      emp.doj,
+      emp.empDate,
+      emp.basic,
+      emp.prepayAmount,
+      emp.absence,
+      emp.maternity,
+      emp.ot,
+      emp.caAdd,
+      emp.caDed,
+      emp.nssf,
+      emp.seniority,
+      { f: `ROUND(${col('K')}-${col('L')}+${col('M')}+${col('N')}+${col('O')}-${col('P')}-${col('Q')}+${col('R')},2)` },
+      { f: `ROUND(${col('S')}*${exchangeRate},0)` },
+      emp.spouse,
+      emp.kids,
+      { f: `(IF(ISNUMBER(${col('U')}),IF(${col('U')}>0,1,0),IF(OR(${col('U')}="yes",${col('U')}="true",${col('U')}="y",${col('U')}="1"),1,0))+${col('V')})*150000` },
+      { f: `MAX(0,${col('T')}-${col('W')})` },
+      { f: `IF(${col('X')}<=1500000,"0%",IF(${col('X')}<=2000000,"5%",IF(${col('X')}<=8500000,"10%",IF(${col('X')}<=12500000,"15%","20%"))))` },
+      { f: `IF(${col('X')}<=1500000,0,IF(${col('X')}<=2000000,ROUND(${col('X')}*0.05-75000,0),IF(${col('X')}<=8500000,ROUND(${col('X')}*0.1-175000,0),IF(${col('X')}<=12500000,ROUND(${col('X')}*0.15-600000,0),ROUND(${col('X')}*0.2-1225000,0)))))` },
+      { f: `ROUND(${col('Z')}/${exchangeRate},2)` },
+      { f: `ROUND(${col('S')}-${col('AA')},2)` },
+      emp.sdReturn,
+      emp.other,
+      emp.group,
+      emp.savingAmt,
+      { f: `ROUND(${col('AB')}+${col('AC')}+${col('AD')},2)` },
+      emp.bankAcc,
+      emp.email,
+      emp.remarks,
+      { f: `ROUND(${col('S')}+${col('AC')}+${col('AD')},2)` }
+    ]);
+  });
+
+  const sheet = XLSX.utils.aoa_to_sheet(rows);
+  sheet['!cols'] = FULL_TIME_COL_WCH.map((wch) => ({ wch }));
+
+  const range = XLSX.utils.decode_range(sheet['!ref']!);
+  for (let R = range.s.r; R <= range.e.r; R++) {
+    for (let C = range.s.c; C <= range.e.c; C++) {
+      const addr = XLSX.utils.encode_cell({ r: R, c: C });
+      const cell = sheet[addr];
+      if (!cell) continue;
+      if (R === 0) {
+        cell.s = EXPORT_HEADER_STYLE;
+      } else {
+        cell.s = FULL_TIME_CENTERED_COLS.has(C)
+          ? EXPORT_CENTERED_DATA_STYLE
+          : EXPORT_DATA_STYLE;
+        const fmt = FULL_TIME_NUMFMT[C];
         if (fmt) cell.z = fmt;
       }
     }
@@ -252,6 +367,8 @@ export default function PayrollProcessor({
     let worksheet: XLSXNS.WorkSheet;
     if (isSemiFullTime) {
       worksheet = buildSemiFullTimeSheet(filteredData, exchangeRate);
+    } else if (isFullTime) {
+      worksheet = buildFullTimeSheet(filteredData, exchangeRate);
     } else {
       worksheet = XLSX.utils.json_to_sheet(filteredData.map(emp => ({
         'ID': emp.staffId,
@@ -572,13 +689,13 @@ export default function PayrollProcessor({
                 <th className="p-3.5 font-bold">Employment Date</th>
                 <th className="p-3.5 font-bold bg-blue-50/40 dark:bg-blue-950/10">Basic Salary</th>
                 <th className="p-3.5 font-bold">Pre. Pay / Percentage</th>
-                <th className="p-3.5 font-bold text-blue-500">Rate</th>
-                <th className="p-3.5 font-bold text-blue-500">Hour</th>
-                <th className="p-3.5 font-bold text-blue-500">Amount</th>
+                <th className="p-3.5 font-bold text-rose-500">Abs(-)</th>
+                <th className="p-3.5 font-bold text-emerald-500">Maternity(+)</th>
+                <th className="p-3.5 font-bold text-blue-500">OT (+)</th>
                 <th className="p-3.5 font-bold text-emerald-500">Cash Advance (+)</th>
+                <th className="p-3.5 font-bold text-rose-500">Cash Advance (-)</th>
                 <th className="p-3.5 font-bold text-rose-500">Provident with NSSF(-)</th>
-                <th className="p-3.5 font-bold text-indigo-500">HRM/After school program</th>
-                <th className="p-3.5 font-bold">PTT/GEP</th>
+                <th className="p-3.5 font-bold text-indigo-500">Seniority/GEP</th>
                 <th className="p-3.5 font-bold bg-brand-50/40 dark:bg-brand-950/10 text-brand-600 dark:text-brand-400">G.Salary</th>
                 <th className="p-3.5 font-bold">Salary to be Paid (KHR)</th>
                 <th className="p-3.5 font-bold text-center">Spouse</th>
@@ -589,7 +706,7 @@ export default function PayrollProcessor({
                 <th className="p-3.5 font-bold bg-amber-50/30 dark:bg-amber-950/10 text-amber-600">TOS (KHR)</th>
                 <th className="p-3.5 font-bold bg-amber-50/30 dark:bg-amber-950/10 text-amber-600">TOS ($)</th>
                 <th className="p-3.5 font-bold text-slate-800 dark:text-slate-200">Total Salary After Tax ($)</th>
-                <th className="p-3.5 font-bold text-indigo-500">Other</th>
+                <th className="p-3.5 font-bold text-emerald-500">SD Return (+)/ Visa Extension</th>
                 <th className="p-3.5 font-bold text-emerald-500">Work Permit (+)</th>
                 <th className="p-3.5 font-bold">Group</th>
                 <th className="p-3.5 font-bold">Saving AMT</th>
@@ -811,19 +928,20 @@ export default function PayrollProcessor({
                       textColor="text-slate-800 dark:text-slate-200 font-semibold bg-blue-50/20 dark:bg-blue-950/5" />
                     <EditableCell empId={emp.id} field="prePayPct" value={emp.prepayAmount} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
                       textColor="text-slate-500 font-mono" isCurrency={false} />
-                    <EditableCell empId={emp.id} field="hourlyRate" value={emp.hourlyRate} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
-                      textColor="text-blue-600 dark:text-blue-400 font-semibold" isCurrency={false} />
-                    <EditableCell empId={emp.id} field="scheduleHours" value={emp.scheduleHours ?? 0} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
-                      textColor="text-blue-600 dark:text-blue-400 font-semibold" isCurrency={false} />
-                    <td className="p-3 font-bold text-blue-600 dark:text-blue-400 font-mono bg-blue-50/20 dark:bg-blue-950/5">${((emp.hourlyRate ?? 0) * (emp.scheduleHours ?? 0)).toFixed(2)}</td>
+                    <EditableCell empId={emp.id} field="absence" value={emp.absence} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-rose-600 dark:text-rose-400 font-semibold" />
+                    <EditableCell empId={emp.id} field="maternity" value={emp.maternity} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-emerald-600 dark:text-emerald-400 font-semibold" />
+                    <EditableCell empId={emp.id} field="ot" value={emp.ot} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-blue-600 dark:text-blue-400 font-semibold" />
                     <EditableCell empId={emp.id} field="caAdd" value={emp.caAdd} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
                       textColor="text-emerald-600 dark:text-emerald-400 font-semibold" />
+                    <EditableCell empId={emp.id} field="caDed" value={emp.caDed} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-rose-600 dark:text-rose-400 font-semibold" />
                     <EditableCell empId={emp.id} field="nssf" value={emp.nssf} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
                       textColor="text-rose-600 dark:text-rose-400 font-semibold" />
-                    <EditableCell empId={emp.id} field="afterSchool" value={emp.afterSchool} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
-                      textColor="text-indigo-600 dark:text-indigo-400 font-semibold" />
                     <EditableCell empId={emp.id} field="seniority" value={emp.seniority} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
-                      textColor="text-slate-800 dark:text-slate-200" />
+                      textColor="text-indigo-600 dark:text-indigo-400 font-semibold" />
                     <td className="p-3 bg-brand-50/20 dark:bg-brand-950/5 text-brand-700 dark:text-brand-300 font-bold text-sm h-12 w-32 align-top">{formatUSD(emp.grossSalaryUSD)}</td>
                     <td className="p-3 bg-slate-50/50 dark:bg-slate-900/50 font-mono font-semibold text-slate-700 dark:text-slate-300 text-[11px] h-12 w-32 align-top">{formatKHR(emp.salaryPaidKHR)}</td>
                     <td className="p-3 text-center text-[11px] font-medium text-slate-600 dark:text-slate-400">{emp.spouse || '-'}</td>
@@ -834,9 +952,9 @@ export default function PayrollProcessor({
                     <td className="p-3 font-mono text-[11px] text-rose-500 bg-amber-50/20 dark:bg-amber-950/5 font-semibold">{formatKHR(emp.taxKHR)}</td>
                     <td className="p-3 text-rose-500 bg-amber-50/20 dark:bg-amber-950/5 font-semibold">{formatUSD(emp.taxUSD)}</td>
                     <td className="p-3 font-semibold text-slate-800 dark:text-slate-200">{formatUSD(emp.salaryAfterTaxUSD)}</td>
-                    <EditableCell empId={emp.id} field="other" value={emp.other} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
-                      textColor="text-indigo-600 dark:text-indigo-400 font-semibold" />
                     <EditableCell empId={emp.id} field="sdReturn" value={emp.sdReturn} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
+                      textColor="text-emerald-600 dark:text-emerald-400 font-semibold" />
+                    <EditableCell empId={emp.id} field="other" value={emp.other} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
                       textColor="text-emerald-600 dark:text-emerald-400 font-semibold" />
                     <EditableCell empId={emp.id} field="group" value={emp.group} editingCell={editingCell} editValue={editValue} onStartEdit={handleStartEdit} onChangeValue={setEditValue} onSaveEdit={handleSaveEdit} onKeyDown={handleKeyDown}
                       textColor="text-slate-600 dark:text-slate-400" isCurrency={false} />

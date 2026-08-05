@@ -31,7 +31,7 @@ export interface Employee {
   absenceHours: number; // For semi-full-time and part-time
   substituteHours: number; // For semi-full-time
   afterSchool: number; // HRM/After school program (Semi-Full-Time)
-  other: number; // Other adjustment (Semi-Full-Time)
+  other: number; // Work Permit (+) (Full-Time) / Other adjustment (Semi-Full-Time)
   adjustError: number; // Adjust error TOS/NSSF (Semi-Full-Time)
   workBook: number; // Work Book deduction (Semi-Full-Time)
   prePayPct: number; // %
@@ -41,11 +41,11 @@ export interface Employee {
   caAdd: number; // Cash Advance / Allowance Add
   caDed: number; // Cash Advance Ded
   nssf: number; // NSSF Ded
-  seniority: number; // Seniority Indemnity
+  seniority: number; // Seniority/GEP (taxable income)
   spouse: string; // Spouse Relief (Khmer only) - store raw import value
   kids: number; // Number of kids for Relief (Khmer only)
   allowance: number; // Tax-exempt / specific allowance (USD)
-  sdReturn: number; // Visa / special deduction return
+  sdReturn: number; // SD Return (+)/ Visa Extension
   provFund: number; // Provident fund deduction
   group: string;
   savingAmt: number;

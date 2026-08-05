@@ -95,16 +95,16 @@ export function computePayroll(emp: Employee, exchangeRate: number): PayrollResu
 
   const prepayAmount = computePrepayAmount(emp, basePay);
 
-  // Approved GDT payroll rule (Full-Time & Semi-Full-Time):
-  //   Gross Salary = Pre. Pay + Amount + HRM / After School Program − Provident with NSSF (-)
-  // Components such as Absence, Maternity, OT, Cash Advance and Seniority/GEP are
-  // intentionally NOT part of the Gross Salary calculation.
-  // Part-Time Gross = Pre.Pay − Absence + Maternity + OT + CashAdvance(+) − CashAdvance(−)
-  //                   − Provident/NSSF + Seniority/GEP
+  // Approved GDT payroll rule:
+  //   Full-Time & Part-Time Gross = Pre. Pay − Abs(−) + Maternity(+) + OT(+)
+  //       + Cash Advance(+) − Cash Advance(−) − Provident with NSSF(−) + Seniority/GEP
+  //   Semi-Full-Time Gross = Pre. Pay + Amount + HRM / After School Program − Provident with NSSF (−)
+  // Seniority/GEP is taxable income (included in the Salary Tax Calculation Base),
+  // so it is part of the Full-Time Gross Salary and therefore taxed.
   const rawGross =
-    emp.employmentType === 'Part-Time'
-      ? prepayAmount - calculatedAbsence + emp.maternity + calculatedOT + emp.caAdd - emp.caDed - emp.nssf + emp.seniority
-      : prepayAmount + calculatedAmount - emp.nssf + calculatedAfterSchool;
+    emp.employmentType === 'Semi-Full-Time'
+      ? prepayAmount + calculatedAmount - emp.nssf + calculatedAfterSchool
+      : prepayAmount - calculatedAbsence + emp.maternity + calculatedOT + emp.caAdd - emp.caDed - emp.nssf + emp.seniority;
   const computedGross = roundUSD(rawGross);
   const grossSalaryUSD = computedGross;
 
@@ -126,10 +126,10 @@ export function computePayroll(emp: Employee, exchangeRate: number): PayrollResu
   const salaryAfterTaxUSD = roundUSD(grossSalaryUSD - taxUSD);
 
   // --- 8. Bank Transfer Amount (USD) ---
-  // Bank = After Tax + Other + Work Permit/SD Return − Seniority − Cash Advance (+)
+  // Bank = After Tax + Work Permit (+) + SD Return (+)/ Visa Extension
   const netBankUSD = roundUSD(
     emp.employmentType === 'Full-Time'
-      ? salaryAfterTaxUSD + emp.other + emp.sdReturn - emp.seniority - emp.caAdd
+      ? salaryAfterTaxUSD + emp.other + emp.sdReturn
       : emp.employmentType === 'Semi-Full-Time'
         ? salaryAfterTaxUSD - emp.seniority - emp.caAdd + emp.adjustError - emp.workBook
         : salaryAfterTaxUSD + emp.sdReturn

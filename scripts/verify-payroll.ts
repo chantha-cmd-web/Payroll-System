@@ -124,49 +124,51 @@ check('Spouse=yes (word), 1 kid', getFamilyReliefKHR('yes', 1), 300000);
 check('Spouse=Y, 3 kids', getFamilyReliefKHR('Y', 3), 600000);
 
 console.log('\n=== 4. Full-Time Staff Payroll Run scenarios ===');
-console.log('  Approved FT Gross formula: Pre. Pay + Amount + HRM/After School Program - Provident with NSSF (-)');
-console.log('  (Absence, Maternity, OT, Cash Advance and Seniority/GEP are EXCLUDED from Gross Salary.)');
+console.log('  Approved FT Gross formula: Pre. Pay − Abs(−) + Maternity(+) + OT(+) + Cash Advance(+)');
+console.log('       − Cash Advance(−) − Provident with NSSF(−) + Seniority/GEP');
+console.log('  Seniority/GEP is taxable income (included in the Salary Tax Calculation Base).');
 
-// Scenario: gross = 2000 (basic 2000). OT 150 and CA(-) 50 are NOT part of Gross.
+// Scenario: gross = 2100 (basic 2000 + OT 150 − CA(-) 50). Bank = After Tax.
 {
   const p = computePayroll(ftEmployee({ basic: 2000, ot: 150, caDed: 50, spouse: '1', kids: 2 }), EXCHANGE_RATE);
-  console.log('  Scenario 4.1: basic 2000 + OT 150 - CA(-) 50, spouse + 2 kids');
-  check('Gross Salary (USD)', p.grossSalaryUSD, 2000);
-  check('Salary to be Paid (KHR)', p.salaryPaidKHR, 2000 * 4100);
+  console.log('  Scenario 4.1: basic 2000 + OT 150 − CA(-) 50, spouse + 2 kids');
+  check('Gross Salary (USD)', p.grossSalaryUSD, 2100);
+  check('Salary to be Paid (KHR)', p.salaryPaidKHR, 2100 * 4100);
   check('Family relief', getFamilyReliefKHR('1', 2), 450000);
-  check('Tax Base (KHR)', p.taxBaseKHR, 2000 * 4100 - 450000);
+  check('Tax Base (KHR)', p.taxBaseKHR, 2100 * 4100 - 450000);
   checkStr('Tax Rate', p.taxRate, '10%');
-  check('TOS (KHR)', p.taxKHR, roundKHR(7750000 * 0.10 - 175000));
-  check('TOS (USD)', p.taxUSD, roundUSD(600000 / 4100));
-  check('Total Salary After Tax (USD)', p.salaryAfterTaxUSD, roundUSD(2000 - 600000 / 4100));
-  check('Bank (USD)', p.netBankUSD, roundUSD(2000 - 600000 / 4100));
+  check('TOS (KHR)', p.taxKHR, roundKHR(8160000 * 0.10 - 175000));
+  check('TOS (USD)', p.taxUSD, roundUSD(641000 / 4100));
+  check('Total Salary After Tax (USD)', p.salaryAfterTaxUSD, roundUSD(2100 - 641000 / 4100));
+  check('Bank (USD)', p.netBankUSD, roundUSD(2100 - 641000 / 4100));
 }
 
-// Scenario: full component test — absence, maternity, OT, CA+-, NSSF, seniority, work permit
-// Only Pre.Pay(2500) - NSSF(75) = 2425 is Gross; the rest is excluded from Gross.
+// Scenario: full component test — absence, maternity, OT, CA+-, NSSF, seniority, SD return, work permit
+// Gross = 2500 − 100 + 200 + 300 + 150 − 50 − 75 + 120 = 3045
 {
   const p = computePayroll(
     ftEmployee({ basic: 2500, absence: 100, maternity: 200, ot: 300, caAdd: 150, caDed: 50, nssf: 75, seniority: 120, sdReturn: 90, other: 60, spouse: '0', kids: 0 }),
     EXCHANGE_RATE
   );
   console.log('  Scenario 4.2: all FT components');
-  check('Gross Salary (USD)', p.grossSalaryUSD, 2425);
-  check('Salary to be Paid (KHR)', p.salaryPaidKHR, roundKHR(2425 * 4100));
-  check('Tax Base (KHR)', p.taxBaseKHR, roundKHR(2425 * 4100));
-  // Base 9,942,500 falls in the 15% bracket (8.5M < base <= 12.5M)
+  check('Gross Salary (USD)', p.grossSalaryUSD, 3045);
+  check('Salary to be Paid (KHR)', p.salaryPaidKHR, roundKHR(3045 * 4100));
+  check('Tax Base (KHR)', p.taxBaseKHR, roundKHR(3045 * 4100));
+  // Base 12,484,500 falls in the 15% bracket (8.5M < base <= 12.5M)
   checkStr('Tax Rate', p.taxRate, '15%');
-  const expectedTaxKHR = roundKHR(2425 * 4100 * 0.15 - 600000);
+  const expectedTaxKHR = roundKHR(3045 * 4100 * 0.15 - 600000);
   check('TOS (KHR)', p.taxKHR, expectedTaxKHR);
   const expectedTaxUSD = roundUSD(expectedTaxKHR / 4100);
   check('TOS (USD)', p.taxUSD, expectedTaxUSD);
-  const expectedAfterTax = roundUSD(2425 - expectedTaxUSD);
+  const expectedAfterTax = roundUSD(3045 - expectedTaxUSD);
   check('Total Salary After Tax (USD)', p.salaryAfterTaxUSD, expectedAfterTax);
-  // Bank = AfterTax + other + sdReturn - seniority - caAdd
-  check('Bank (USD)', p.netBankUSD, roundUSD(expectedAfterTax + 60 + 90 - 120 - 150));
-  check('Gross for Summary (USD)', p.grossForSummary, roundUSD(2425 + 60 + 90));
+  // Bank = After Tax + Work Permit (other) + SD Return
+  check('Bank (USD)', p.netBankUSD, roundUSD(expectedAfterTax + 60 + 90));
+  check('Gross for Summary (USD)', p.grossForSummary, roundUSD(3045 + 60 + 90));
 }
 
-// Scenario: user-reported Full-Time Gross example (previously produced 563.43)
+// Scenario: Full-Time Gross — Rate/Hour/After School are NOT Full-Time inputs.
+// Only Pre. Pay(309.60) − NSSF(11.92) = 297.68 is Gross.
 {
   const p = computePayroll(ftEmployee({
     id: 10,
@@ -177,42 +179,39 @@ console.log('  (Absence, Maternity, OT, Cash Advance and Seniority/GEP are EXCLU
     other: 210.92,
     nssf: 11.92
   }), EXCHANGE_RATE);
-  console.log('  Scenario 4.2b: Full-Time user-reported Gross example');
-  // Pre.Pay(309.60) + Amount(12.5*1.29=16.13) + HRM/After School(38.70 USD as-is)
-  //   - Provident/NSSF(11.92) = 352.51
-  // 'Other' (210.92) must NOT be included; before the fix this produced 563.43.
+  console.log('  Scenario 4.2b: Full-Time Gross (Rate/Hour/After School excluded from FT Gross)');
   check('Pre. Pay (USD)', p.prepayAmount, 309.60);
-  check('Amount (USD) = Hrs x Rate', roundUSD(12.5 * 1.29), 16.13);
-  check('Full-Time Gross (spec example)', p.grossSalaryUSD, 352.51);
-  check('Salary to be Paid (KHR)', p.salaryPaidKHR, roundKHR(352.51 * 4100));
-  check('Gross for Summary (USD)', p.grossForSummary, roundUSD(352.51 + 210.92));
+  check('Full-Time Gross (USD)', p.grossSalaryUSD, 297.68);
+  check('Salary to be Paid (KHR)', p.salaryPaidKHR, roundKHR(297.68 * 4100));
+  // Work Permit (other) is a non-taxable add-on, included only in Summary/Bank
+  check('Gross for Summary (USD)', p.grossForSummary, roundUSD(297.68 + 210.92));
 }
 
-// Scenario: multiple Full-Time records — component values must never leak into Gross
+// Scenario: multiple Full-Time records — every component flows through Gross & tax
 {
   const cases: Array<{ name: string; o: Partial<Employee>; expectedGross: number; expectedBank?: number }> = [
     {
-      name: 'Maternity + OT only (excluded from Gross)',
+      name: 'Maternity + OT + CA(+) all taxable (in Gross)',
       o: { id: 21, basic: 1500, maternity: 400, ot: 100, caAdd: 200 },
-      expectedGross: 1500,
-      expectedBank: 1192.68
+      expectedGross: 2200,
+      expectedBank: 2016.34
     },
     {
-      name: 'Cash Advance both sides (net zero, excluded from Gross)',
+      name: 'Cash Advance both sides net into Gross',
       o: { id: 22, basic: 1200, caAdd: 300, caDed: 100 },
-      expectedGross: 1200,
-      expectedBank: 822.68
+      expectedGross: 1400,
+      expectedBank: 1302.68
     },
     {
-      name: 'Seniority + Other + Work Permit (excluded from Gross, in Bank/Summary)',
+      name: 'Seniority taxable; Work Permit + SD Return added at Bank',
       o: { id: 23, basic: 800, seniority: 500, other: 100, sdReturn: 50 },
-      expectedGross: 800,
-      expectedBank: 412.68
+      expectedGross: 1300,
+      expectedBank: 1362.68
     },
     {
-      name: 'Amount + After School + NSSF (part of Gross)',
+      name: 'NSSF deducted from Gross (Rate/Hour/After School ignored)',
       o: { id: 24, basic: 500, hourlyRate: 4, scheduleHours: 20, afterSchool: 40, nssf: 12 },
-      expectedGross: 608
+      expectedGross: 488
     }
   ];
   for (const c of cases) {
@@ -225,13 +224,13 @@ console.log('  (Absence, Maternity, OT, Cash Advance and Seniority/GEP are EXCLU
       check('Bank (USD)', p.netBankUSD, c.expectedBank);
     }
   }
-  // Case 1 (Maternity/OT/CA): Gross = 1500; base 6,150,000 -> 10%; tax = 440,000; USD = 107.32
-  //   afterTax = 1392.68; Bank = 1392.68 - caAdd(200) = 1192.68
-  // Case 2 (CA +/-): Gross = 1200; base 4,920,000 -> 10%; tax = 317,000; USD = 77.32
-  //   afterTax = 1122.68; Bank = 1122.68 - caAdd(300) = 822.68
-  // Case 3 (Seniority/Other/SD): Gross = 800; base 3,280,000 -> 10%; tax = 153,000; USD = 37.32
-  //   afterTax = 762.68; Bank = 762.68 + other(100) + sdReturn(50) - seniority(500) = 412.68
-  // Case 4 (Amount/AfterSchool/NSSF): Gross = Pre.Pay(500) + Amount(80) + AfterSchool(40) - NSSF(12) = 608
+  // Case 1 (Maternity/OT/CA): Gross = 2200; base 9,020,000 -> 15%; tax = 753,000; USD = 183.66
+  //   afterTax = 2016.34; Bank = 2016.34
+  // Case 2 (CA +/-): Gross = 1400; base 5,740,000 -> 10%; tax = 399,000; USD = 97.32
+  //   afterTax = 1302.68; Bank = 1302.68
+  // Case 3 (Seniority/Other/SD): Gross = 1300; base 5,330,000 -> 10%; tax = 358,000; USD = 87.32
+  //   afterTax = 1212.68; Bank = 1212.68 + other(100) + sdReturn(50) = 1362.68
+  // Case 4 (NSSF): Gross = Pre.Pay(500) − NSSF(12) = 488
 }
 
 // Scenario: zero salary
@@ -268,19 +267,19 @@ console.log('  (Absence, Maternity, OT, Cash Advance and Seniority/GEP are EXCLU
   check('Bank (USD)', p.netBankUSD, 100);
 }
 
-// Scenario: maternity + OT with cash advance payout recovered at bank
+// Scenario: maternity + OT + cash advance all taxable in Gross
 {
   const p = computePayroll(ftEmployee({ basic: 1500, maternity: 400, ot: 100, caAdd: 200, spouse: '0', kids: 0 }), EXCHANGE_RATE);
-  console.log('  Scenario 4.5: maternity + OT + cash advance');
-  // Gross = Pre.Pay(1500) only; Maternity/OT/CA are excluded from Gross
-  check('Gross Salary (USD)', p.grossSalaryUSD, 1500);
-  // Base = 1500*4100 = 6,150,000 -> 10%
-  checkStr('Tax Rate', p.taxRate, '10%');
-  const expectedTax = roundKHR(6150000 * 0.10 - 175000);
+  console.log('  Scenario 4.5: maternity + OT + cash advance (all taxable)');
+  // Gross = Pre.Pay(1500) + Maternity(400) + OT(100) + CA+(200) = 2200
+  check('Gross Salary (USD)', p.grossSalaryUSD, 2200);
+  // Base = 2200*4100 = 9,020,000 -> 15%
+  checkStr('Tax Rate', p.taxRate, '15%');
+  const expectedTax = roundKHR(9020000 * 0.15 - 600000);
   check('TOS (KHR)', p.taxKHR, expectedTax);
-  // Bank = afterTax - caAdd(200)
-  const afterTax = roundUSD(1500 - roundUSD(expectedTax / 4100));
-  check('Bank (USD)', p.netBankUSD, roundUSD(afterTax - 200));
+  // Bank = After Tax (CA+ already in Gross, no separate recovery)
+  const afterTax = roundUSD(2200 - roundUSD(expectedTax / 4100));
+  check('Bank (USD)', p.netBankUSD, afterTax);
 }
 
 // Scenario: exchange rate consistency — KHR -> USD -> KHR round trip
@@ -389,12 +388,12 @@ console.log('\n=== 6. Semi-Full-Time and Part-Time regression ===');
   check('Bank (USD)', pt.netBankUSD, roundUSD(pt.salaryAfterTaxUSD + 20));
 }
 
-console.log('\n=== 7. Seniority & Cash Advance net-zero treatment ===');
+console.log('\n=== 7. Seniority & Cash Advance are taxable (included in Gross) ===');
 {
   const p = computePayroll(ftEmployee({ basic: 1000, seniority: 500, caAdd: 300, spouse: '0', kids: 0 }), EXCHANGE_RATE);
-  console.log('  Scenario 7.1: seniority/CA excluded from gross, recovered at bank');
-  check('Gross excludes seniority + CA(+)', p.grossSalaryUSD, 1000);
-  check('Bank recovers seniority + CA(+)', p.netBankUSD, roundUSD(p.salaryAfterTaxUSD - 500 - 300));
+  console.log('  Scenario 7.1: seniority + CA(+) included in gross, taxed');
+  check('Gross includes seniority + CA(+)', p.grossSalaryUSD, 1800);
+  check('Bank = After Tax (no separate recovery)', p.netBankUSD, p.salaryAfterTaxUSD);
 }
 
 console.log('\n=== 8. Approved Pre.Pay formula (user workbook) ===');
