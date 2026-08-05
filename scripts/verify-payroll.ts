@@ -246,6 +246,19 @@ console.log('  Seniority/GEP is taxable income (included in the Salary Tax Calcu
   check('Bank (USD) = After Tax − Seniority/GEP', p.netBankUSD, 2093.53);
 }
 
+// Scenario: Abs(-) is always subtracted from Gross (positive or negative stored value)
+// Real case report: staff with ABS(-) were having it ADDED when the workbook stored a
+// negative value (Pre.Pay − Abs(−) turned into Pre.Pay + |−100|). It must be minus.
+{
+  const pPos = computePayroll(ftEmployee({ id: 26, basic: 2000, absence: 100 }), EXCHANGE_RATE);
+  const pNeg = computePayroll(ftEmployee({ id: 27, basic: 2000, absence: -100 }), EXCHANGE_RATE);
+  console.log('  Scenario 4.2e: Abs(-) always subtracted (positive + negative stored values)');
+  check('Abs +100 -> Gross 1900', pPos.grossSalaryUSD, 1900);
+  check('Abs -100 -> Gross 1900 (not 2100)', pNeg.grossSalaryUSD, 1900);
+  check('Abs +100 Salary to be Paid', pPos.salaryPaidKHR, 1900 * EXCHANGE_RATE);
+  check('Abs -100 Salary to be Paid', pNeg.salaryPaidKHR, 1900 * EXCHANGE_RATE);
+}
+
 // Scenario: zero salary
 {
   const p = computePayroll(ftEmployee({ basic: 0, status: 'UN', spouse: '0', kids: 0 }), EXCHANGE_RATE);

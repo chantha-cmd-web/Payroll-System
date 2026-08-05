@@ -214,7 +214,7 @@ function buildFullTimeSheet(data: PayrollResult[], exchangeRate: number): XLSXNS
       emp.empDate,
       emp.basic,
       emp.prepayAmount,
-      emp.absence,
+      Math.abs(emp.absence),
       emp.maternity,
       emp.ot,
       emp.caAdd,
@@ -435,6 +435,9 @@ export default function PayrollProcessor({
       finalValue = value;
     } else if (['staffId', 'name', 'nat', 'pos', 'dept', 'campus', 'doj', 'empDate', 'bankAcc', 'email', 'remarks'].includes(field)) {
       finalValue = editValue;
+    } else if (['absence', 'caDed', 'nssf', 'workBook'].includes(field)) {
+      // Deduction columns ("(-)") are stored positive so the engine always subtracts them.
+      finalValue = Math.abs(parseFloat(editValue) || 0);
     } else {
       // It's a number
       finalValue = parseFloat(editValue) || 0;

@@ -369,7 +369,8 @@ export default function App() {
             record.Teaching,
             record['Teaching Hours']
           ) ?? existing.scheduleHours;
-          const absence = first(record['Abs(-)'], record['Absence(-)'], record.Absence, record.absence) ?? existing.absence;
+          // Abs(-) is a deduction column: normalize to positive so the engine always subtracts it.
+          const absence = absNum(first(record['Abs(-)'], record['Absence(-)'], record.Absence, record.absence)) ?? Math.abs(existing.absence);
           const maternity = first(record['Maternity(+)'], record.Maternity, record.maternity) ?? existing.maternity;
           const ot = first(record['OT (+)'], record['OT(+)'], record.OT, record.ot) ?? existing.ot;
           const caAdd = first(record['Cash Advance (+)'], record['CashAdvance(+)'], record.caAdd) ?? existing.caAdd;

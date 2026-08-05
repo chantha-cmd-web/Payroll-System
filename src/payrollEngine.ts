@@ -101,10 +101,12 @@ export function computePayroll(emp: Employee, exchangeRate: number): PayrollResu
   //   Semi-Full-Time Gross = Pre. Pay + Amount + HRM / After School Program − Provident with NSSF (−)
   // Seniority/GEP is taxable income (included in the Salary Tax Calculation Base),
   // so it is part of the Full-Time Gross Salary and therefore taxed.
+  // Abs(−) is a deduction: it is always subtracted, so its magnitude is used even if
+  // the workbook stores the value as a negative number.
   const rawGross =
     emp.employmentType === 'Semi-Full-Time'
       ? prepayAmount + calculatedAmount - emp.nssf + calculatedAfterSchool
-      : prepayAmount - calculatedAbsence + emp.maternity + calculatedOT + emp.caAdd - emp.caDed - emp.nssf + emp.seniority;
+      : prepayAmount - Math.abs(calculatedAbsence) + emp.maternity + calculatedOT + emp.caAdd - emp.caDed - emp.nssf + emp.seniority;
   const computedGross = roundUSD(rawGross);
   const grossSalaryUSD = computedGross;
 
