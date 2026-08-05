@@ -126,10 +126,12 @@ export function computePayroll(emp: Employee, exchangeRate: number): PayrollResu
   const salaryAfterTaxUSD = roundUSD(grossSalaryUSD - taxUSD);
 
   // --- 8. Bank Transfer Amount (USD) ---
-  // Bank = After Tax + Work Permit (+) + SD Return (+)/ Visa Extension
+  // Full-Time Bank = After Tax + Work Permit (+) + SD Return (+)/ Visa Extension − Seniority/GEP
+  // (Seniority/GEP is paid outside the bank transfer; verified against staff #2:
+  //   After Tax 2,389.02 − Seniority/GEP 295.49 = Bank 2,093.53)
   const netBankUSD = roundUSD(
     emp.employmentType === 'Full-Time'
-      ? salaryAfterTaxUSD + emp.other + emp.sdReturn
+      ? salaryAfterTaxUSD + emp.other + emp.sdReturn - emp.seniority
       : emp.employmentType === 'Semi-Full-Time'
         ? salaryAfterTaxUSD - emp.seniority - emp.caAdd + emp.adjustError - emp.workBook
         : salaryAfterTaxUSD + emp.sdReturn

@@ -162,8 +162,8 @@ console.log('  Seniority/GEP is taxable income (included in the Salary Tax Calcu
   check('TOS (USD)', p.taxUSD, expectedTaxUSD);
   const expectedAfterTax = roundUSD(3045 - expectedTaxUSD);
   check('Total Salary After Tax (USD)', p.salaryAfterTaxUSD, expectedAfterTax);
-  // Bank = After Tax + Work Permit (other) + SD Return
-  check('Bank (USD)', p.netBankUSD, roundUSD(expectedAfterTax + 60 + 90));
+  // Bank = After Tax + Work Permit (other) + SD Return − Seniority/GEP (295.49 case: 2,389.02 − 295.49 = 2,093.53)
+  check('Bank (USD)', p.netBankUSD, roundUSD(expectedAfterTax + 60 + 90 - 120));
   check('Gross for Summary (USD)', p.grossForSummary, roundUSD(3045 + 60 + 90));
 }
 
@@ -203,10 +203,10 @@ console.log('  Seniority/GEP is taxable income (included in the Salary Tax Calcu
       expectedBank: 1302.68
     },
     {
-      name: 'Seniority taxable; Work Permit + SD Return added at Bank',
+      name: 'Seniority taxable; Work Permit + SD Return added at Bank, Seniority deducted',
       o: { id: 23, basic: 800, seniority: 500, other: 100, sdReturn: 50 },
       expectedGross: 1300,
-      expectedBank: 1362.68
+      expectedBank: 862.68
     },
     {
       name: 'NSSF deducted from Gross (Rate/Hour/After School ignored)',
@@ -229,8 +229,21 @@ console.log('  Seniority/GEP is taxable income (included in the Salary Tax Calcu
   // Case 2 (CA +/-): Gross = 1400; base 5,740,000 -> 10%; tax = 399,000; USD = 97.32
   //   afterTax = 1302.68; Bank = 1302.68
   // Case 3 (Seniority/Other/SD): Gross = 1300; base 5,330,000 -> 10%; tax = 358,000; USD = 87.32
-  //   afterTax = 1212.68; Bank = 1212.68 + other(100) + sdReturn(50) = 1362.68
+  //   afterTax = 1212.68; Bank = 1212.68 + other(100) + sdReturn(50) - seniority(500) = 862.68
   // Case 4 (NSSF): Gross = Pre.Pay(500) − NSSF(12) = 488
+}
+
+// Scenario: real case (staff #2) — Bank = Total Salary After Tax − Seniority/GEP
+// After Tax 2,389.02 − Seniority/GEP 295.49 = Bank 2,093.53
+{
+  const p = computePayroll(ftEmployee({ id: 25, basic: 2342.95, seniority: 295.49, spouse: '0', kids: 0 }), EXCHANGE_RATE);
+  console.log('  Scenario 4.2d: staff #2 real case (After Tax 2389.02 − Seniority 295.49 = Bank 2093.53)');
+  check('Gross Salary (USD)', p.grossSalaryUSD, 2638.44);
+  checkStr('Tax Rate', p.taxRate, '15%');
+  check('TOS (KHR)', p.taxKHR, 1022641);
+  check('TOS (USD)', p.taxUSD, 249.42);
+  check('Total Salary After Tax (USD)', p.salaryAfterTaxUSD, 2389.02);
+  check('Bank (USD) = After Tax − Seniority/GEP', p.netBankUSD, 2093.53);
 }
 
 // Scenario: zero salary
@@ -388,12 +401,14 @@ console.log('\n=== 6. Semi-Full-Time and Part-Time regression ===');
   check('Bank (USD)', pt.netBankUSD, roundUSD(pt.salaryAfterTaxUSD + 20));
 }
 
-console.log('\n=== 7. Seniority & Cash Advance are taxable (included in Gross) ===');
+console.log('\n=== 7. Seniority & Cash Advance are taxable (included in Gross); Seniority deducted from Bank ===');
 {
   const p = computePayroll(ftEmployee({ basic: 1000, seniority: 500, caAdd: 300, spouse: '0', kids: 0 }), EXCHANGE_RATE);
-  console.log('  Scenario 7.1: seniority + CA(+) included in gross, taxed');
+  console.log('  Scenario 7.1: seniority + CA(+) included in gross, taxed; Bank = After Tax − Seniority');
   check('Gross includes seniority + CA(+)', p.grossSalaryUSD, 1800);
-  check('Bank = After Tax (no separate recovery)', p.netBankUSD, p.salaryAfterTaxUSD);
+  // After Tax 1662.68 − Seniority 500 = Bank 1162.68 (real case: 2389.02 − 295.49 = 2093.53)
+  check('Bank = After Tax − Seniority', p.netBankUSD, roundUSD(p.salaryAfterTaxUSD - 500));
+  check('Bank (USD) expected 1162.68', p.netBankUSD, 1162.68);
 }
 
 console.log('\n=== 8. Approved Pre.Pay formula (user workbook) ===');

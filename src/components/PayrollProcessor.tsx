@@ -235,7 +235,7 @@ function buildFullTimeSheet(data: PayrollResult[], exchangeRate: number): XLSXNS
       emp.other,
       emp.group,
       emp.savingAmt,
-      { f: `ROUND(${col('AB')}+${col('AC')}+${col('AD')},2)` },
+      { f: `ROUND(${col('AB')}+${col('AC')}+${col('AD')}-${col('R')},2)` },
       emp.bankAcc,
       emp.email,
       emp.remarks,
