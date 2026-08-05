@@ -7,6 +7,7 @@
  */
 
 import { computePayroll, computeTax, computePrepayAmount, getFamilyReliefKHR, roundUSD, roundKHR } from '../src/payrollEngine';
+import { buildCampusExpenseReport } from '../src/campusExpenseReport';
 import { Employee } from '../src/types';
 
 let passed = 0;
@@ -512,6 +513,45 @@ console.log('\n=== 10. NaN safety for legacy / imported records ===');
   const p = computePayroll(missingPT, EXCHANGE_RATE);
   console.log('  Scenario 10.2: Part-Time record missing hourlyRate/presentHours');
   check('Gross Salary (USD) is not NaN', p.grossSalaryUSD, 0);
+}
+
+console.log('\n=== 11. Campus expense report (Overview Dashboard export) ===');
+{
+  const bch1 = computePayroll(ftEmployee({ id: 31, staffId: 'B1', name: 'A', campus: 'BCH', pos: 'Management Team', basic: 2000, ot: 150, caDed: 50, spouse: '1', kids: 2 }), EXCHANGE_RATE);
+  const bch2 = computePayroll(ftEmployee({ id: 32, staffId: 'B2', name: 'B', campus: 'BCH', pos: 'Staff', basic: 800, seniority: 500, other: 100, sdReturn: 50 }), EXCHANGE_RATE);
+  const btb1 = computePayroll(ftEmployee({ id: 33, staffId: 'T1', name: 'C', campus: 'BTB', pos: 'Management Team', basic: 2342.95, seniority: 295.49, spouse: '0', kids: 0 }), EXCHANGE_RATE);
+  const rep = buildCampusExpenseReport([btb1, bch1, bch2]);
+  console.log('  Scenario 11.1: grouping, position order, staff #2 real case, reconciliation');
+  check('2 campus groups, order of first appearance', rep.groups.length, 2);
+  checkStr('Group 1 = BTB', rep.groups[0].campus, 'BTB');
+  checkStr('Group 2 = BCH', rep.groups[1].campus, 'BCH');
+  checkStr('Position order: Management Team first', rep.rows[0].description, 'Management Team');
+  checkStr('Position order: Staff second', rep.rows[1].description, 'Staff');
+  checkStr('Sub Total : after each campus group', rep.rows[2].description, 'Sub Total :');
+
+  const mt = rep.rows[0];
+  check('BTB Management Team staff count', mt.staffCount, 1);
+  // Report G.Salary = Pre.Pay - Abs + Maternity + OT = 2342.95 (staff #2 real case)
+  check('BTB Mgmt G.Salary', mt.gross, 2342.95);
+  check('BTB Mgmt TOS negative', mt.tos, -249.42);
+  check('BTB Mgmt Bank = After Tax - Seniority', mt.bank, 2093.53);
+
+  // Reference rule: Bank = G.Salary + NSSF + CashAdvance + Visa + WorkPermit + TOS (exact, all rows + Grand Total)
+  const recon = [...rep.rows, rep.grandTotal];
+  let reconOk = true;
+  for (const r of recon) {
+    const sum = roundUSD(r.gross + r.nssf + r.cashAdvance + r.visa + r.workPermit + r.tos);
+    if (Math.abs(sum - r.bank) > 0.001) {
+      reconOk = false;
+      console.error(`  FAIL  reconciliation for "${r.description}": ${sum} != ${r.bank}`);
+    }
+  }
+  check('Reconciliation holds for all rows + Grand Total', reconOk ? 1 : 0, 1);
+
+  check('Grand Total staff count', rep.grandTotal.staffCount, 3);
+  check('Grand Total Bank', rep.grandTotal.bank, roundUSD(bch1.netBankUSD + bch2.netBankUSD + btb1.netBankUSD));
+  // BCH Mgmt = 2000 + 150 OT = 2150; BTB Mgmt = 2342.95; BCH Staff = 800
+  check('Grand Total G.Salary', rep.grandTotal.gross, roundUSD(2342.95 + 2150 + 800));
 }
 
 console.log(`\n${passed} passed, ${failed} failed`);

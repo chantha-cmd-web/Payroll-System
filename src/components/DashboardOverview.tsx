@@ -10,7 +10,10 @@ import {
   Settings, UserCheck, AlertCircle, FileSpreadsheet, ShieldAlert
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import * as XLSXNS from 'xlsx-js-style';
+const XLSX: typeof XLSXNS = ((XLSXNS as unknown as { default?: typeof XLSXNS }).default) ?? XLSXNS;
 import { PayrollResult, WidgetConfig } from '../types';
+import { buildCampusExpenseReport } from '../campusExpenseReport';
 
 interface DashboardOverviewProps {
   processedData: PayrollResult[];
@@ -35,6 +38,49 @@ const DEFAULT_WIDGETS: WidgetConfig[] = [
   { id: 'backup-widget', title: 'Encrypted Cloud Backups', enabled: true, type: 'system', size: 'sm' },
   { id: 'security-widget', title: 'Security & MFA Audit', enabled: true, type: 'system', size: 'sm' }
 ];
+
+const CAMPUS_EXPENSE_HEADERS = [
+  'No.', 'Campus', 'Description', 'No.Staff', 'G.Salary', 'NSSF',
+  'Cash Advance', 'Visa', 'Work Permit', 'TOS', 'Bank'
+];
+
+const CAMPUS_EXPENSE_COL_WCH = [5, 10, 26, 9, 12, 10, 13, 10, 12, 10, 12];
+const CAMPUS_MONEY_FMT = '"$"#,##0.00;("$"#,##0.00);"$-"';
+const CAMPUS_COUNT_FMT = '0';
+
+const CAMPUS_BORDER: XLSXNS.CellStyle['border'] = {
+  top: { style: 'thin', color: { rgb: 'FFE2E8F0' } },
+  bottom: { style: 'thin', color: { rgb: 'FFE2E8F0' } },
+  left: { style: 'thin', color: { rgb: 'FFE2E8F0' } },
+  right: { style: 'thin', color: { rgb: 'FFE2E8F0' } }
+};
+
+const CAMPUS_HEADER_STYLE: XLSXNS.CellStyle = {
+  font: { bold: true, sz: 10, name: 'Calibri', color: { rgb: 'FF0F172A' } },
+  fill: { patternType: 'solid', fgColor: { rgb: 'FFF1F5F9' } },
+  alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+  border: CAMPUS_BORDER
+};
+
+const CAMPUS_DATA_STYLE: XLSXNS.CellStyle = {
+  font: { sz: 10, name: 'Calibri', color: { rgb: 'FF1F2937' } },
+  alignment: { vertical: 'center', wrapText: true },
+  border: CAMPUS_BORDER
+};
+
+const CAMPUS_SUBTOTAL_STYLE: XLSXNS.CellStyle = {
+  font: { bold: true, sz: 10, name: 'Calibri', color: { rgb: 'FF1F2937' } },
+  fill: { patternType: 'solid', fgColor: { rgb: 'FFF8FAFC' } },
+  alignment: { vertical: 'center', wrapText: true },
+  border: CAMPUS_BORDER
+};
+
+const CAMPUS_GRAND_TOTAL_STYLE: XLSXNS.CellStyle = {
+  font: { bold: true, sz: 10, name: 'Calibri', color: { rgb: 'FF0F172A' } },
+  fill: { patternType: 'solid', fgColor: { rgb: 'FFE2E8F0' } },
+  alignment: { vertical: 'center', wrapText: true },
+  border: CAMPUS_BORDER
+};
 
 export default function DashboardOverview({
   processedData,
@@ -120,6 +166,71 @@ export default function DashboardOverview({
     });
     return Object.entries(campuses).map(([name, value]) => ({ name, value }));
   }, [processedData]);
+
+  const handleExportCampusExpenses = () => {
+    const { rows, grandTotal, groups } = buildCampusExpenseReport(processedData);
+    const aoa: (string | number)[][] = [CAMPUS_EXPENSE_HEADERS.slice()];
+    const noByRow = new Map<number, number>();
+    groups.forEach(g => noByRow.set(g.startRow - 1, g.no));
+
+    rows.forEach((r, i) => {
+      aoa.push([
+        noByRow.get(i) ?? '',
+        r.campus,
+        r.description,
+        r.staffCount,
+        r.gross,
+        r.nssf,
+        r.cashAdvance,
+        r.visa,
+        r.workPermit,
+        r.tos,
+        r.bank
+      ]);
+    });
+    aoa.push([
+      '', '', grandTotal.description, grandTotal.staffCount, grandTotal.gross, grandTotal.nssf,
+      grandTotal.cashAdvance, grandTotal.visa, grandTotal.workPermit, grandTotal.tos, grandTotal.bank
+    ]);
+
+    const sheet = XLSXNS.utils.aoa_to_sheet(aoa);
+    sheet['!cols'] = CAMPUS_EXPENSE_COL_WCH.map((wch) => ({ wch }));
+
+    // Merge the No. and Campus cells across each campus group (data rows + Sub Total).
+    sheet['!merges'] = groups.flatMap(g => ([
+      { s: { r: g.startRow - 1, c: 0 }, e: { r: g.endRow - 1, c: 0 } },
+      { s: { r: g.startRow - 1, c: 1 }, e: { r: g.endRow - 1, c: 1 } }
+    ]));
+
+    const range = XLSXNS.utils.decode_range(sheet['!ref']!);
+    const subTotalRows = new Set(
+      rows.map((r, i) => (r.isSubTotal ? i + 1 : -1)).filter(r => r >= 0)
+    );
+    const grandTotalRow = rows.length + 1;
+
+    for (let R = 0; R <= range.e.r; R++) {
+      for (let C = 0; C <= range.e.c; C++) {
+        const addr = XLSXNS.utils.encode_cell({ r: R, c: C });
+        const cell = sheet[addr];
+        if (!cell) continue;
+        if (R === 0) {
+          cell.s = CAMPUS_HEADER_STYLE;
+        } else if (R === grandTotalRow) {
+          cell.s = CAMPUS_GRAND_TOTAL_STYLE;
+        } else if (subTotalRows.has(R)) {
+          cell.s = CAMPUS_SUBTOTAL_STYLE;
+        } else {
+          cell.s = CAMPUS_DATA_STYLE;
+        }
+        if (C === 0 || C === 3) cell.z = CAMPUS_COUNT_FMT;
+        if (C >= 4 && C <= 10) cell.z = CAMPUS_MONEY_FMT;
+      }
+    }
+
+    const workbook = XLSXNS.utils.book_new();
+    XLSXNS.utils.book_append_sheet(workbook, sheet, 'Campus Expenses');
+    XLSX.writeFile(workbook, `Campus_Expenses_${new Date().toISOString().split('T')[0]}.xlsx`, { cellStyles: true });
+  };
 
   const toggleWidget = (id: string) => {
     setWidgets(prev =>
@@ -394,9 +505,19 @@ export default function DashboardOverview({
               <h4 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 Expenses by Campus (USD)
               </h4>
-              <span className="text-[10px] font-mono text-slate-400 font-semibold">
-                {campusData.length} campus{campusData.length !== 1 ? 'es' : ''}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-mono text-slate-400 font-semibold">
+                  {campusData.length} campus{campusData.length !== 1 ? 'es' : ''}
+                </span>
+                <button
+                  onClick={handleExportCampusExpenses}
+                  title="Export Expenses by Campus to Excel"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 bg-emerald-50 dark:bg-emerald-950/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-[11px] font-semibold rounded-lg border border-emerald-200/60 dark:border-emerald-900/40 transition"
+                >
+                  <Download className="w-3 h-3" />
+                  Export Excel
+                </button>
+              </div>
             </div>
 
             <div className="space-y-4">
