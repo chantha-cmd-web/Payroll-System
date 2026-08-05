@@ -9,9 +9,148 @@ import {
   HelpCircle, DollarSign, ArrowRightLeft, Percent, Eye, Search, FileText
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import * as XLSX from 'xlsx';
+import * as XLSXNS from 'xlsx-js-style';
+const XLSX: typeof XLSXNS = ((XLSXNS as unknown as { default?: typeof XLSXNS }).default) ?? XLSXNS;
 import { useReactToPrint } from 'react-to-print';
 import { PayrollResult } from '../types';
+
+const SEMI_FULL_TIME_HEADERS = [
+  'No.', 'Staff ID', 'Names', 'Nationality', 'Position', 'Department', 'Campus',
+  'DOJ(Cal. Eff. Date)', 'Employment Date', 'Basic Salary', 'Pre. Pay / Percentage',
+  'Rate', 'Hour', 'Amount', 'Cash Advance (+)', 'Provident with NSSF(-)',
+  'HRM/After school program', 'PTT/GEP', 'G.Salary', 'Salary to be Paid (KHR)',
+  'Spouse', 'Minor Children', 'Allawance', 'Salary Tax Calculation Base',
+  'Tax Rate', 'TOS (KHR)', 'TOS ($)', 'Total Salary After Tax ($)',
+  'Adjust error TOS /NSSF', 'Work Book (-)', 'Bank', 'Bank Account Number',
+  'Email', 'Remarks', 'Gross salary for summary'
+];
+
+const SEMI_FULL_TIME_COL_WCH = [
+  5, 10, 22, 12, 12, 12, 10, 14, 14, 12, 16, 8, 8, 10, 14, 18, 18, 10, 10, 18,
+  8, 13, 10, 18, 8, 12, 10, 18, 16, 12, 10, 16, 22, 20, 16
+];
+
+const EXPORT_BORDER_STYLE: XLSXNS.CellStyle['border'] = {
+  top: { style: 'thin', color: { rgb: 'FFE2E8F0' } },
+  bottom: { style: 'thin', color: { rgb: 'FFE2E8F0' } },
+  left: { style: 'thin', color: { rgb: 'FFE2E8F0' } },
+  right: { style: 'thin', color: { rgb: 'FFE2E8F0' } }
+};
+
+const EXPORT_HEADER_STYLE: XLSXNS.CellStyle = {
+  font: { bold: true, sz: 10, name: 'Calibri', color: { rgb: 'FF0F172A' } },
+  fill: { patternType: 'solid', fgColor: { rgb: 'FFF1F5F9' } },
+  alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+  border: EXPORT_BORDER_STYLE
+};
+
+const EXPORT_DATA_STYLE: XLSXNS.CellStyle = {
+  font: { sz: 10, name: 'Calibri', color: { rgb: 'FF1F2937' } },
+  alignment: { vertical: 'center', wrapText: true },
+  border: EXPORT_BORDER_STYLE
+};
+
+const EXPORT_CENTERED_DATA_STYLE: XLSXNS.CellStyle = {
+  font: { sz: 10, name: 'Calibri', color: { rgb: 'FF1F2937' } },
+  alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+  border: EXPORT_BORDER_STYLE
+};
+
+const SEMI_FULL_TIME_CENTERED_COLS = new Set([0, 20, 21, 24]);
+
+const SEMI_FULL_TIME_NUMFMT: Record<number, string> = {
+  0: '0',
+  9: '"$"#,##0.00',
+  10: '"$"#,##0.00',
+  11: '"$"#,##0.00',
+  12: '0.##',
+  13: '"$"#,##0.00',
+  14: '"$"#,##0.00',
+  15: '"$"#,##0.00',
+  16: '"$"#,##0.00',
+  17: '"$"#,##0.00',
+  18: '"$"#,##0.00',
+  19: '#,##0',
+  21: '0',
+  22: '#,##0',
+  23: '#,##0',
+  25: '#,##0',
+  26: '"$"#,##0.00',
+  27: '"$"#,##0.00',
+  28: '"$"#,##0.00',
+  29: '"$"#,##0.00',
+  30: '"$"#,##0.00',
+  34: '"$"#,##0.00'
+};
+
+function buildSemiFullTimeSheet(data: PayrollResult[], exchangeRate: number): XLSXNS.WorkSheet {
+  const rows: (string | number | { f: string })[][] = [SEMI_FULL_TIME_HEADERS.slice()];
+
+  data.forEach((emp, index) => {
+    const rowNum = index + 2;
+    const col = (letter: string) => `${letter}${rowNum}`;
+    rows.push([
+      emp.id,
+      emp.staffId,
+      emp.name,
+      emp.nat,
+      emp.pos,
+      emp.dept,
+      emp.campus,
+      emp.doj,
+      emp.empDate,
+      emp.basic,
+      emp.prepayAmount,
+      emp.hourlyRate,
+      emp.scheduleHours ?? 0,
+      { f: `ROUND(${col('L')}*${col('M')},2)` },
+      emp.caAdd,
+      emp.nssf,
+      emp.afterSchool,
+      emp.seniority,
+      { f: `ROUND(${col('K')}+${col('N')}+${col('Q')}-${col('P')},2)` },
+      { f: `ROUND(${col('S')}*${exchangeRate},0)` },
+      emp.spouse,
+      emp.kids,
+      { f: `(IF(ISNUMBER(${col('U')}),IF(${col('U')}>0,1,0),IF(OR(${col('U')}="yes",${col('U')}="true",${col('U')}="y",${col('U')}="1"),1,0))+${col('V')})*150000` },
+      { f: `MAX(0,${col('T')}-${col('W')})` },
+      { f: `IF(${col('X')}<=1500000,"0%",IF(${col('X')}<=2000000,"5%",IF(${col('X')}<=8500000,"10%",IF(${col('X')}<=12500000,"15%","20%"))))` },
+      { f: `IF(${col('X')}<=1500000,0,IF(${col('X')}<=2000000,ROUND(${col('X')}*0.05-75000,0),IF(${col('X')}<=8500000,ROUND(${col('X')}*0.1-175000,0),IF(${col('X')}<=12500000,ROUND(${col('X')}*0.15-600000,0),ROUND(${col('X')}*0.2-1225000,0)))))` },
+      { f: `ROUND(${col('Z')}/${exchangeRate},2)` },
+      { f: `ROUND(${col('S')}-${col('AA')},2)` },
+      emp.adjustError,
+      emp.workBook,
+      { f: `ROUND(${col('AB')}-${col('R')}-${col('O')}+${col('AC')}-${col('AD')},2)` },
+      emp.bankAcc,
+      emp.email,
+      emp.remarks,
+      { f: `ROUND(${col('S')},2)` }
+    ]);
+  });
+
+  const sheet = XLSX.utils.aoa_to_sheet(rows);
+  sheet['!cols'] = SEMI_FULL_TIME_COL_WCH.map((wch) => ({ wch }));
+
+  const range = XLSX.utils.decode_range(sheet['!ref']!);
+  for (let R = range.s.r; R <= range.e.r; R++) {
+    for (let C = range.s.c; C <= range.e.c; C++) {
+      const addr = XLSX.utils.encode_cell({ r: R, c: C });
+      const cell = sheet[addr];
+      if (!cell) continue;
+      if (R === 0) {
+        cell.s = EXPORT_HEADER_STYLE;
+      } else {
+        cell.s = SEMI_FULL_TIME_CENTERED_COLS.has(C)
+          ? EXPORT_CENTERED_DATA_STYLE
+          : EXPORT_DATA_STYLE;
+        const fmt = SEMI_FULL_TIME_NUMFMT[C];
+        if (fmt) cell.z = fmt;
+      }
+    }
+  }
+
+  return sheet;
+}
 
 interface PayrollProcessorProps {
   processedData: PayrollResult[];
@@ -110,47 +249,11 @@ export default function PayrollProcessor({
 
   const handleExportExcel = () => {
     const isSemiFullTime = !isFullTime && !isPartTime;
-    const worksheet = XLSX.utils.json_to_sheet(filteredData.map(emp => {
-      if (isSemiFullTime) {
-        return {
-          'No.': emp.id,
-          'Staff ID': emp.staffId,
-          'Names': emp.name,
-          'Nationality': emp.nat,
-          'Position': emp.pos,
-          'Department': emp.dept,
-          'Campus': emp.campus,
-          'DOJ(Cal. Eff. Date)': emp.doj,
-          'Employment Date': emp.empDate,
-          'Basic Salary': emp.basic,
-          'Pre. Pay / Percentage': emp.prepayAmount,
-          'Rate': emp.hourlyRate,
-          'Hour': emp.scheduleHours ?? 0,
-          'Amount': Math.round((emp.hourlyRate ?? 0) * (emp.scheduleHours ?? 0) * 100) / 100,
-          'Cash Advance (+)': emp.caAdd,
-          'Provident with NSSF(-)': emp.nssf,
-          'HRM/After school program': emp.afterSchool,
-          'PTT/GEP': emp.seniority,
-          'G.Salary': emp.grossSalaryUSD,
-          'Salary to be Paid (KHR)': emp.salaryPaidKHR,
-          'Spouse': emp.spouse,
-          'Minor Children': emp.kids,
-          'Allawance': ((/^(yes|true|y|1)$/i.test(emp.spouse) ? 1 : Number(emp.spouse) > 0 ? 1 : 0) + emp.kids) * 150000,
-          'Salary Tax Calculation Base': emp.taxBaseKHR,
-          'Tax Rate': emp.taxRate,
-          'TOS (KHR)': emp.taxKHR,
-          'TOS ($)': emp.taxUSD,
-          'Total Salary After Tax ($)': emp.salaryAfterTaxUSD,
-          'Adjust error TOS /NSSF': emp.adjustError,
-          'Work Book (-)': emp.workBook,
-          'Bank': emp.netBankUSD,
-          'Bank Account Number': emp.bankAcc,
-          'Email': emp.email,
-          'Remarks': emp.remarks,
-          'Gross salary for summary': emp.grossForSummary
-        };
-      }
-      return {
+    let worksheet: XLSXNS.WorkSheet;
+    if (isSemiFullTime) {
+      worksheet = buildSemiFullTimeSheet(filteredData, exchangeRate);
+    } else {
+      worksheet = XLSX.utils.json_to_sheet(filteredData.map(emp => ({
         'ID': emp.staffId,
         'Name': emp.name,
         'Nationality': emp.nat,
@@ -163,20 +266,11 @@ export default function PayrollProcessor({
         'Tax Due (KHR)': emp.taxKHR,
         'Tax Due (USD)': emp.taxUSD,
         'Net Bank (USD)': emp.netBankUSD
-      };
-    }));
-    if (isSemiFullTime) {
-      worksheet['!cols'] = [
-        { wch: 5 }, { wch: 10 }, { wch: 22 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 10 },
-        { wch: 14 }, { wch: 14 }, { wch: 12 }, { wch: 16 }, { wch: 8 }, { wch: 8 }, { wch: 10 },
-        { wch: 14 }, { wch: 18 }, { wch: 18 }, { wch: 10 }, { wch: 10 }, { wch: 18 }, { wch: 8 },
-        { wch: 13 }, { wch: 10 }, { wch: 18 }, { wch: 8 }, { wch: 12 }, { wch: 10 }, { wch: 18 },
-        { wch: 16 }, { wch: 12 }, { wch: 10 }, { wch: 16 }, { wch: 22 }, { wch: 20 }, { wch: 16 }
-      ];
+      })));
     }
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Payroll');
-    XLSX.writeFile(workbook, `Payroll_Data_${new Date().toISOString().split('T')[0]}.xlsx`);
+    XLSX.writeFile(workbook, `Payroll_Data_${new Date().toISOString().split('T')[0]}.xlsx`, { cellStyles: true });
   };
 
   const [searchTerm, setSearchTerm] = useState('');
